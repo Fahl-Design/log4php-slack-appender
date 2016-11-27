@@ -12,7 +12,7 @@
  */
 class LoggerAppenderSlack extends LoggerAppender
 {
-    const ENDPOINT_VALIDATION_STRING = 'https://hooks.slack.com/';
+    const ENDPOINT_VALIDATION_STRING = 'https://hooks.slack.com';
 
     /**
      * @var Maknz\Slack\Client
@@ -42,31 +42,109 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_icon;
 
     /**
-     * Get Username.
+     * @var string
+     */
+    protected $_text;
+
+    /**
+     * Get Text.
      *
      * @return string
      */
-    protected function _getUsername()
+    protected function _getText()
     {
-        return $this->_username;
+        return $this->_text;
     }
 
     /**
-     * Set Username.
+     * Overwrite layout with LoggerLayoutSimple.
      *
-     * @param string $username
+     * @return LoggerLayoutSimple
+     */
+    public function getDefaultLayout()
+    {
+        return new LoggerLayoutSimple();
+    }
+
+    /**
+     * Forwards the logging event to the destination.
      *
-     * @throws \InvalidArgumentException
+     * Derived appenders should implement this method to perform actual logging.
+     *
+     * @param LoggerLoggingEvent $event
+     */
+    protected function append(LoggerLoggingEvent $event)
+    {
+        // format text with layout
+        $this->_formatEventToText($event);
+        // get slack client
+        $slackClient = $this->_getSlackClient();
+        // create message
+        $message = new \Maknz\Slack\Message($slackClient);
+        // set username
+        $message->setUsername($this->_getUsername());
+        // set icon
+        $message->setIcon($this->_getIcon());
+        // set channel
+        $message->setChannel($this->_getChannel());
+        // inject formatted message from event
+        $message->setText($this->_getText());
+        // send message
+        $message->send();
+    }
+
+    /**
+     * Wrapper for layout format.
+     *
+     * @param LoggerLoggingEvent $event
      *
      * @return $this
      */
-    public function setUsername($username)
+    protected function _formatEventToText(LoggerLoggingEvent $event)
     {
-        if (!empty($username)) {
-            $this->_username = (string) $username;
-        } else {
-            throw new \InvalidArgumentException('username missing');
+        $this->_text = trim($this->layout->format($event));
+
+        return $this;
+    }
+
+    /**
+     * Get SlackClient.
+     *
+     * @return Maknz\Slack\Client
+     */
+    protected function _getSlackClient()
+    {
+        if (null === $this->_slackClient) {
+            $this->_initSlackClient();
         }
+
+        return $this->_slackClient;
+    }
+
+    /**
+     * Set SlackClient.
+     *
+     * @param \Maknz\Slack\Client $client
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setSlackClient(\Maknz\Slack\Client $client = null)
+    {
+        $this->_slackClient = $client;
+
+        return $this;
+    }
+
+    /**
+     * Init php slack client.
+     *
+     * @return $this
+     */
+    protected function _initSlackClient()
+    {
+        $slackClient = new Maknz\Slack\Client($this->_getEndpoint());
+
+        $this->_slackClient = $slackClient;
 
         return $this;
     }
@@ -102,64 +180,33 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get Channel.
+     * Get Username.
      *
      * @return string
      */
-    protected function _getChannel()
+    protected function _getUsername()
     {
-        return $this->_channel;
+        return $this->_username;
     }
 
     /**
-     * Set Channel.
+     * Set Username.
      *
-     * @param string $channel
+     * @param string $username
      *
-     * @return LoggerAppenderSlack
+     * @throws \InvalidArgumentException
+     *
+     * @return $this
      */
-    public function setChannel($channel)
+    public function setUsername($username)
     {
-        $this->_channel = $channel;
+        if (!empty($username) && is_string($username)) {
+            $this->_username = (string) $username;
+        } else {
+            throw new \InvalidArgumentException('username invalid');
+        }
 
         return $this;
-    }
-
-    /**
-     * Overwrite layout with LoggerLayoutSimple.
-     *
-     * @return LoggerLayoutSimple
-     */
-    public function getDefaultLayout()
-    {
-        return new LoggerLayoutSimple();
-    }
-
-    /**
-     * Forwards the logging event to the destination.
-     *
-     * Derived appenders should implement this method to perform actual logging.
-     *
-     * @param LoggerLoggingEvent $event
-     */
-    protected function append(LoggerLoggingEvent $event)
-    {
-        // get slack client
-        $slackClient = $this->_getSlackClient();
-
-        // create message
-        $message = $slackClient->createMessage();
-        // set username
-        $message->setUsername($this->_getUsername());
-        // set icon
-        $message->setIcon($this->_getIcon());
-        // set channel
-        $message->setChannel($this->_getChannel());
-        // inject formatted message from event
-        $message->setText(trim($this->layout->format($event)));
-
-        // send message
-        $message->send();
     }
 
     /**
@@ -187,29 +234,25 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get Client.
+     * Get Channel.
      *
-     * @return Maknz\Slack\Client
+     * @return string
      */
-    protected function _getSlackClient()
+    protected function _getChannel()
     {
-        if (null === $this->_slackClient) {
-            $this->_initSlackClient();
-        }
-
-        return $this->_slackClient;
+        return $this->_channel;
     }
 
     /**
-     * Init php slack client.
+     * Set Channel.
      *
-     * @return $this
+     * @param string $channel
+     *
+     * @return LoggerAppenderSlack
      */
-    protected function _initSlackClient()
+    public function setChannel($channel)
     {
-        $slackClient = new Maknz\Slack\Client($this->_getEndpoint());
-
-        $this->_slackClient = $slackClient;
+        $this->_channel = $channel;
 
         return $this;
     }
