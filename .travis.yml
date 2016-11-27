@@ -5,21 +5,23 @@ php:
   - 7.0
   - 7.1
   - hhvm
-
+  - nightly
 matrix:
   allow_failures:
     - php: hhvm
+    - php: nightly
 
 before_install:
   - composer self-update
 
 before_script:
-  - composer update --prefer-source --no-interaction
   - composer --version
   - phpunit --version
+  - composer update --prefer-source --no-interaction
+  - vendor/bin/phpunit --version
 
 script:
-  - phpunit
+  - vendor/bin/phpunit
 
 sudo: false
 
