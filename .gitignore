@@ -3,5 +3,6 @@ vendor/
 build/coverage/*
 !build/coverage/.gitkeep
 composer.phar
+.php_cs.cache
 composer.lock
 
