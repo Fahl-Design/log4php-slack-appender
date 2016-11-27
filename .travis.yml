@@ -15,11 +15,7 @@ php:
 matrix:
   include:
     - php: 5.6
-      env:
-        RUN_WITH_COVERAGE=true
-        TRAVIS="${TRAVIS}"
-        TRAVIS_JOB_ID="${TRAVIS_JOB_ID}"
-        COVERALLS_REPO_TOKEN='R9XPNsRqbwDLC9A41Bp4Io5YtsQ5DLh34'
+      env: RUN_WITH_COVERAGE=true
 
   allow_failures:
     - php: hhvm
