@@ -39,7 +39,7 @@ script:
   - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then phpunit --coverage-clover build/logs/clover.xml; else phpunit; fi
 
 after_success:
-  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then php vendor/bin/coveralls -v; fi
+  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then php vendor/bin/coveralls -v -c .coveralls.yml; fi
 
 notifications:
   email: false
