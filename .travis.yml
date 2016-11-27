@@ -10,8 +10,14 @@ matrix:
   allow_failures:
     - php: hhvm
 
+before_install:
+  - composer self-update
+
 before_script:
   - composer install --prefer-source --no-interaction
 
 script:
   - phpunit
+
+notifications:
+  email: false
