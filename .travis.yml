@@ -28,17 +28,11 @@ before_script:
   - vendor/bin/phpunit --version
 
 script:
-  if [ ${RUN_WITH_COVERAGE} = "true" ]; then
-    - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
-  else
-    - vendor/bin/phpunit
-  fi
+  - if [ ${RUN_WITH_COVERAGE} = "true" ]; then "vendor/bin/phpunit --coverage-clover build/logs/clover.xml" else "vendor/bin/phpunit" fi
 
 
 after_success:
-  if [ ${RUN_WITH_COVERAGE} = "true" ]; then
-     - php vendor/bin/coveralls -v
-  fi
+  - if [ ${RUN_WITH_COVERAGE} = "true" ]; then "php vendor/bin/coveralls -v" fi
 
 
 sudo: false
