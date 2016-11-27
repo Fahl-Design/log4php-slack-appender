@@ -34,6 +34,7 @@ install:
   - export PATH="vendor/bin:$PATH"
   - travis_retry composer install --prefer-dist --no-interaction
   - phpunit --version
+  - echo ${RUN_WITH_COVERAGE}
 
 script:
   - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then  phpunit --coverage-clover build/logs/clover.xml ; else phpunit; fi
