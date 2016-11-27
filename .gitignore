@@ -1,7 +1,9 @@
 .idea/
 vendor/
 build/coverage/*
+build/logs/*
 !build/coverage/.gitkeep
+!build/logs/.gitkeep
 composer.phar
 .php_cs.cache
 composer.lock
