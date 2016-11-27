@@ -1,5 +1,7 @@
 language: php
 
+sudo: false
+
 env:
   RUN_WITH_COVERAGE=false
 
@@ -19,19 +21,24 @@ matrix:
     - php: hhvm
     - php: nightly
 
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 before_install:
   - composer self-update
 
-before_script:
-  - composer --version
-  - composer install --no-interaction
-  - vendor/bin/phpunit --version
+install:
+  - travis_retry composer self-update && composer --version
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - travis_retry composer install --prefer-dist --no-interaction
+  - phpunit --version
 
 script:
   - 'if [ ${RUN_WITH_COVERAGE} = "true" ]; then
-      vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+      phpunit --coverage-clover build/logs/clover.xml
     else
-      vendor/bin/phpunit
+      phpunit
     fi'
 
 
@@ -41,11 +48,7 @@ after_success:
     fi'
 
 
-sudo: false
+
 
 notifications:
   email: false
-
-cache:
-  directories:
-    - $HOME/.composer/cache
