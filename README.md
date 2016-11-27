@@ -1,4 +1,15 @@
-# Slack for Laravel
+# Slack as appender for log4php
+
+## Status badges
+### Master Branch
+[![Build Status Master](https://travis-ci.org/Fahl-Design/log4php-slack-appender.svg?branch=master)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
+[![StyleCI Master](https://styleci.io/repos/74897031/shield?branch=master)](https://styleci.io/repos/74897031)
+
+### Develop Branch
+[![Build Status Develop](https://travis-ci.org/Fahl-Design/log4php-slack-appender.svg?branch=develop)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
+[![StyleCI Develop](https://styleci.io/repos/74897031/shield?branch=develop)](https://styleci.io/repos/74897031)
+
+## Description
 
 This package allows you to use [Slack for PHP](https://github.com/maknz/slack) easily and elegantly in your app as an [log4php](https://logging.apache.org) appender. 
 Read the instructions below to get it set up.
