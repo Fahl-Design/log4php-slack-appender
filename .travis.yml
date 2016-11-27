@@ -15,7 +15,10 @@ php:
 matrix:
   include:
     - php: 5.6
-      env: RUN_WITH_COVERAGE=true
+      env:
+       - EXECUTE_CS_CHECK=true
+       - EXECUTE_TEST_COVERALLS=true
+       - PATH="$HOME/.local/bin:$PATH"
 
   allow_failures:
     - php: hhvm
@@ -24,25 +27,24 @@ matrix:
 cache:
   directories:
     - $HOME/.composer/cache
+    - $HOME/.local
 
 before_install:
-  - mv ${HOME}/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ${HOME}/xdebug.ini || return 0
-  - travis_retry composer self-update && composer --version
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - export PATH="vendor/bin:$PATH"
+  - if [[ $EXECUTE_TEST_COVERALLS != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi
+  - composer self-update
+  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then composer require --dev --no-update satooshi/php-coveralls ; fi
 
 install:
-  - travis_retry composer update --no-interaction
+  - travis_retry composer install --no-interaction --ignore-platform-reqs
   - phpunit --version
 
 script:
-  - echo ${RUN_WITH_COVERAGE}
-  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then cp ${HOME}/xdebug.ini ${HOME}/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0; fi
-  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then phpunit --coverage-clover build/logs/clover.xml; else phpunit; fi
-  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then rm ${HOME}/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0; fi
+  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml ; fi
+  - if [[ $EXECUTE_TEST_COVERALLS != 'true' ]]; then ./vendor/bin/phpunit ; fi
+  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run ; fi
 
-after_success:
-  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then php vendor/bin/coveralls -c "./.coveralls.yml" -v; fi
+after_script:
+  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/coveralls ; fi
 
 notifications:
   email: false
