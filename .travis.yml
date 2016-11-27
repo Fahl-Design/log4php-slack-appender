@@ -1,29 +1,48 @@
 language: php
 
+sudo: false
+
+env:
+  RUN_WITH_COVERAGE=false
+
 php:
   - 5.6
   - 7.0
   - 7.1
   - hhvm
   - nightly
+
 matrix:
+  include:
+    - php: 5.6
+      env: RUN_WITH_COVERAGE=true
+
   allow_failures:
     - php: hhvm
     - php: nightly
 
-before_install:
-  - composer self-update
+cache:
+  directories:
+    - $HOME/.composer/cache
 
-before_script:
-  - composer --version
+before_install:
+  - mv ${HOME}/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ${HOME}/xdebug.ini || return 0
+  - travis_retry composer self-update && composer --version
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - export PATH="vendor/bin:$PATH"
+
+install:
+  - travis_retry composer update --no-interaction
   - phpunit --version
-  - composer install --prefer-source --no-interaction
-  - vendor/bin/phpunit --version
 
 script:
-  - vendor/bin/phpunit
+  - echo ${RUN_WITH_COVERAGE}
+  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then cp ${HOME}/xdebug.ini ${HOME}/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0; fi
+  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then phpunit --coverage-clover build/logs/clover.xml; else phpunit; fi
+  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then rm ${HOME}/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0; fi
 
-sudo: false
+after_success:
+  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then php vendor/bin/coveralls -c "./.coveralls.yml" -v; fi
 
 notifications:
   email: false

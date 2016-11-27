@@ -2,12 +2,14 @@
 
 ## Status badges
 ### Master Branch
-[![Build Status Master](https://travis-ci.org/Fahl-Design/log4php-slack-appender.svg?branch=master)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
-[![StyleCI Master](https://styleci.io/repos/74897031/shield?branch=master)](https://styleci.io/repos/74897031)
+[![Build Status](https://travis-ci.org/Fahl-Design/log4php-slack-appender.svg?branch=master)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
+[![StyleCI](https://styleci.io/repos/74897031/shield?branch=master)](https://styleci.io/repos/74897031)
+[![Coverage Status](https://coveralls.io/repos/github/Fahl-Design/log4php-slack-appender/badge.svg?branch=master)](https://coveralls.io/github/Fahl-Design/log4php-slack-appender?branch=master)
 
 ### Develop Branch
-[![Build Status Develop](https://travis-ci.org/Fahl-Design/log4php-slack-appender.svg?branch=develop)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
-[![StyleCI Develop](https://styleci.io/repos/74897031/shield?branch=develop)](https://styleci.io/repos/74897031)
+[![Build Status](https://travis-ci.org/Fahl-Design/log4php-slack-appender.svg?branch=develop)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
+[![StyleCI](https://styleci.io/repos/74897031/shield?branch=develop)](https://styleci.io/repos/74897031)
+[![Coverage Status](https://coveralls.io/repos/github/Fahl-Design/log4php-slack-appender/badge.svg?branch=develop)](https://coveralls.io/github/Fahl-Design/log4php-slack-appender?branch=master)
 
 ## Description
 
