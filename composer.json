@@ -1,8 +1,8 @@
 {
-  "name": "webproject-xyz/log4php-slack-appender",
-  "description": "A simple log4php SLACK sender",
+  "name": "fahl-design/log4php-slack-appender",
+  "description": "A log4php appender build as wrapper for maknz/slack package",
   "keywords": ["log", "logging", "php", "slack"],
-  "license": "Apache-2.0",
+  "license": "MIT",
   "authors": [
     {
       "name": "Benjamin Fahl",
