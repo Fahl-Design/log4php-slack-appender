@@ -22,7 +22,7 @@
     "phpunit/phpunit": "5.6.*",
     "phpunit/php-invoker": "1.*",
     "mockery/mockery": "0.9.*",
-    "sllh/php-cs-fixer-styleci-bridge": "^1.5",
+    "sllh/php-cs-fixer-styleci-bridge": "2.1.*",
     "friendsofphp/php-cs-fixer": "1.*"
   },
   "autoload": {
