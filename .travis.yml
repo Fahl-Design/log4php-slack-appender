@@ -15,7 +15,11 @@ php:
 matrix:
   include:
     - php: 5.6
-      env: RUN_WITH_COVERAGE=true
+      env:
+        RUN_WITH_COVERAGE=true
+        TRAVIS="${TRAVIS}"
+        TRAVIS_JOB_ID="${TRAVIS_JOB_ID}"
+        COVERALLS_REPO_TOKEN='R9XPNsRqbwDLC9A41Bp4Io5YtsQ5DLh34'
 
   allow_failures:
     - php: hhvm
@@ -39,7 +43,7 @@ script:
   - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then phpunit --coverage-clover build/logs/clover.xml; else phpunit; fi
 
 after_success:
-  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then php vendor/bin/coveralls -v -c .coveralls.yml; fi
+  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then php vendor/bin/coveralls -c "./.coveralls.yml"; fi
 
 notifications:
   email: false
