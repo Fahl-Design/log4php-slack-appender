@@ -23,7 +23,7 @@ script:
   - vendor/bin/phpunit
 
 after_success:
-  - php vendor/bin/coveralls
+  - php vendor/bin/coveralls -v
 
 sudo: false
 
