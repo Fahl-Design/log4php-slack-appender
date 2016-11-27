@@ -1,9 +1,11 @@
 preset: recommended
 
-enabled:
-  - newline_after_open_tag
-  - short_array_syntax
-  - php_unit_construct
-  - php_unit_strict
-  - blank_line_after_namespace
-  - class_definition
+risky: false
+
+finder:
+  exclude:
+    - "src/test"
+  name:
+    - "*.php"
+  path:
+    - "src/main"
