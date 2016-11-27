@@ -26,23 +26,20 @@ cache:
     - $HOME/.composer/cache
 
 before_install:
-  - composer self-update
-
-install:
   - travis_retry composer self-update && composer --version
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - export PATH="vendor/bin:$PATH"
+
+install:
   - travis_retry composer install --prefer-dist --no-interaction
   - phpunit --version
   - echo ${RUN_WITH_COVERAGE}
 
 script:
-  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then  phpunit --coverage-clover build/logs/clover.xml ; else phpunit; fi
+  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then phpunit --coverage-clover build/logs/clover.xml; else phpunit; fi
 
 after_success:
-  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then  php vendor/bin/coveralls -v; fi
-
-
+  - if [[ ${RUN_WITH_COVERAGE} == "true" ]]; then php vendor/bin/coveralls -v; fi
 
 notifications:
   email: false
