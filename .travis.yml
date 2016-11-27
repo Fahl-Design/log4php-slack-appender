@@ -16,14 +16,20 @@ before_install:
 
 before_script:
   - composer --version
-  - phpunit --version
-  - composer install --prefer-source --no-interaction
+  - composer install --no-interaction
   - vendor/bin/phpunit --version
 
 script:
   - vendor/bin/phpunit
 
+after_success:
+  - travis_retry php vendor/bin/coveralls -v
+
 sudo: false
 
 notifications:
   email: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
