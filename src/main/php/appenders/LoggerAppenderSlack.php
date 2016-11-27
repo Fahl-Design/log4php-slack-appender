@@ -5,7 +5,7 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at.
  *
  *       http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -20,25 +20,21 @@
  * LoggerAppenderSlack appends log events to a Slack channel.
  *
  *
- * @package    log4php
- * @subpackage appenders
  * @since      2.4.0
+ *
  * @author     Benjamin Fahl <ben@webproject.xyz>
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ *
  * @link       http://graylog2.org/ Graylog2 website
  */
 class LoggerAppenderSlack extends LoggerAppender
 {
     const ENDPOINT_VALIDATION_STRING = 'https://hooks.slack.com/';
+
     /**
      * @var Maknz\Slack\Client
      */
     protected $_slackClient;
-
-    /**
-     * @var stdClass
-     */
-    protected $_config;
 
     /**
      * @var string
@@ -46,7 +42,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_username;
 
     /**
-     * Endpoint (slack hook url 'https://hooks.slack.com/...')
+     * Endpoint (slack hook url 'https://hooks.slack.com/...').
      *
      * @var string
      */
@@ -63,7 +59,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_icon;
 
     /**
-     * Get username form config
+     * Get Username.
      *
      * @return string
      */
@@ -73,17 +69,18 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set username
+     * Set Username.
      *
      * @param string $username
      *
      * @return $this
+     *
      * @throws \InvalidArgumentException
      */
     public function setUsername($username)
     {
         if (!empty($username)) {
-            $this->_username = (string)$username;
+            $this->_username = (string) $username;
         } else {
             throw new \InvalidArgumentException('username missing');
         }
@@ -92,7 +89,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get Endpoint
+     * Get Endpoint.
      *
      * @return string
      */
@@ -102,11 +99,12 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set Endpoint
+     * Set Endpoint.
      *
      * @param string $endpoint
      *
      * @return LoggerAppenderSlack
+     *
      * @throws \InvalidArgumentException
      */
     public function setEndpoint($endpoint)
@@ -121,7 +119,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get Channel
+     * Get Channel.
      *
      * @return string
      */
@@ -131,7 +129,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set Channel
+     * Set Channel.
      *
      * @param string $channel
      *
@@ -145,7 +143,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Overwrite layout with LoggerLayoutSimple
+     * Overwrite layout with LoggerLayoutSimple.
      *
      * @return LoggerLayoutSimple
      */
@@ -182,7 +180,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get Icon
+     * Get Icon.
      *
      * @return string
      */
@@ -192,7 +190,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set Icon
+     * Set Icon.
      *
      * @param string $icon
      *
@@ -206,7 +204,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get Client
+     * Get Client.
      *
      * @return Maknz\Slack\Client
      */
@@ -215,11 +213,12 @@ class LoggerAppenderSlack extends LoggerAppender
         if (null === $this->_slackClient) {
             $this->_initSlackClient();
         }
+
         return $this->_slackClient;
     }
 
     /**
-     * Init php slack client
+     * Init php slack client.
      *
      * @return $this
      */

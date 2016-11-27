@@ -12,6 +12,6 @@ indent_style = space
 indent_size = 4
 
 # Matches the exact files either package.json or .travis.yml
-[{package.json,.travis.yml,Jenkinsfile,*.groovy,*.scss}]
+[{composer.json,.travis.yml,Jenkinsfile,*.groovy,*.scss}]
 indent_style = space
 indent_size = 2
