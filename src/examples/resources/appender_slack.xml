@@ -15,7 +15,7 @@
 -->
 <log4php:configuration xmlns:log4php="http://logging.apache.org/log4php/" threshold="all">
     <appender name="default" class="LoggerAppenderSlack">
-        <!-- get endpoint url from https://hooks.slack.com -->
+        <!-- get endpoint url from https://my.slack.com/services/new/incoming-webhook -->
         <param name="endpoint" value="https://hooks.slack.com/services/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX" />
         <param name="channel" value="#yourChannel" />
         <param name="username" value="Log4php" />
