@@ -29,7 +29,9 @@ before_script:
 
 script:
   - 'if [ ${RUN_WITH_COVERAGE} = "true" ]; then
-      vendor/bin/phpunit --coverage-clover build/logs/clover.xml" else "vendor/bin/phpunit"
+      vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+    else
+      vendor/bin/phpunit
     fi'
 
 
