@@ -11,7 +11,6 @@ matrix:
     - php: hhvm
 
 before_script:
-  - echo 'default_socket_timeout = 60' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - composer install --prefer-source --no-interaction
 
 script:
