@@ -73,9 +73,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param string $username
      *
-     * @return $this
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return $this
      */
     public function setUsername($username)
     {
@@ -103,9 +103,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param string $endpoint
      *
-     * @return LoggerAppenderSlack
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return LoggerAppenderSlack
      */
     public function setEndpoint($endpoint)
     {
