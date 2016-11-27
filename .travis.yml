@@ -23,7 +23,7 @@ script:
   - vendor/bin/phpunit
 
 after_success:
-  - travis_retry php vendor/bin/coveralls -v
+  - php vendor/bin/coveralls
 
 sudo: false
 
