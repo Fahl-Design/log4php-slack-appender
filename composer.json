@@ -23,7 +23,8 @@
     "phpunit/php-invoker": "1.*",
     "mockery/mockery": "0.9.*",
     "sllh/php-cs-fixer-styleci-bridge": "2.1.*",
-    "friendsofphp/php-cs-fixer": "1.*"
+    "friendsofphp/php-cs-fixer": "1.*",
+    "codeclimate/php-test-reporter": "^0.3.2"
   },
   "autoload": {
     "classmap": ["src/main/php/"]

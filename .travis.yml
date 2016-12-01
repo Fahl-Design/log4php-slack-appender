@@ -1,9 +1,5 @@
 language: php
 
-addons:
-  code_climate:
-    repo_token: 09df205e6ee3369531c260d90714ae0ec8870b030e875ee072f61359542080ab
-
 sudo: false
 
 env:
@@ -47,7 +43,8 @@ script:
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run ; fi
 
 after_script:
-  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then  bash <(curl -s https://codecov.io/bash) ; fi
+  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then bash <(curl -s https://codecov.io/bash) ; fi
+  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then ./vendor/bin/test-reporter --coverage-report=coverage.xml ; fi
 
 notifications:
   email: false
