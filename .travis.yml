@@ -2,6 +2,11 @@ language: php
 
 sudo: false
 
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.local
+
 env:
   RUN_WITH_COVERAGE=false
 
@@ -24,17 +29,15 @@ matrix:
     - php: hhvm
     - php: nightly
 
-cache:
-  directories:
-    - $HOME/.composer/cache
-    - $HOME/.local
-
 before_install:
-  - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi
+  - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
   - travis_retry composer self-update
+  - git config --global user.name travis-ci
+  - git config --global user.email travis@webproject.xyz
+  - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then echo "extension=xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0 ; fi
 
 install:
-  - travis_retry composer install --no-interaction --ignore-platform-reqs
+  - travis_retry composer update --no-interaction --ignore-platform-reqs
   - phpunit --version
 
 script:
