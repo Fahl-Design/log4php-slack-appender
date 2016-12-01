@@ -8,10 +8,10 @@ engines:
     enabled: true
   phpmd:
     enabled: true
-      config:
-        file_extensions:
-          - php
-        rulesets: "cleancode,codesize,controversial,naming,design,unusedcode"
+    config:
+      file_extensions:
+        - php
+      rulesets: "cleancode,codesize,controversial,naming,design,unusedcode"
 ratings:
   paths:
   - src/main/php/**
