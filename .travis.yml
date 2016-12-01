@@ -1,5 +1,9 @@
 language: php
 
+addons:
+  code_climate:
+    repo_token: 09df205e6ee3369531c260d90714ae0ec8870b030e875ee072f61359542080ab
+
 sudo: false
 
 env:
@@ -17,7 +21,7 @@ matrix:
     - php: 5.6
       env:
        - EXECUTE_CS_CHECK=true
-       - EXECUTE_TEST_COVERALLS=true
+       - RUN_WITH_COVERAGE=true
        - PATH="$HOME/.local/bin:$PATH"
 
   allow_failures:
@@ -30,22 +34,20 @@ cache:
     - $HOME/.local
 
 before_install:
-  - if [[ $EXECUTE_TEST_COVERALLS != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi
-  - composer self-update
-  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then composer require --dev --no-update satooshi/php-coveralls ; fi
+  - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi
+  - travis_retry composer self-update
 
 install:
   - travis_retry composer install --no-interaction --ignore-platform-reqs
   - phpunit --version
 
 script:
-  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/phpunit --coverage-clover=coverage.xml ; fi
-  - if [[ $EXECUTE_TEST_COVERALLS != 'true' ]]; then ./vendor/bin/phpunit ; fi
+  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then ./vendor/bin/phpunit --coverage-clover=coverage.xml ; fi
+  - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then ./vendor/bin/phpunit ; fi
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run ; fi
 
 after_script:
-  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/coveralls ; fi
-  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then  bash <(curl -s https://codecov.io/bash) ; fi
+  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then  bash <(curl -s https://codecov.io/bash) ; fi
 
 notifications:
   email: false

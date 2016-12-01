@@ -11,16 +11,14 @@
 [![Daily Downloads](https://poser.pugx.org/fahl-design/log4php-slack-appender/d/daily?format=flat-square)](https://packagist.org/packages/fahl-design/log4php-slack-appender)
 
 ### Master Branch
-[![Build Status](https://travis-ci.org/Fahl-Design/log4php-slack-appender.svg?branch=master&format=flat-square)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
+[![Build Status](https://img.shields.io/travis/Fahl-Design/log4php-slack-appender/master.svg?style=flat-square)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
 [![StyleCI](https://styleci.io/repos/74897031/shield?branch=master&format=flat-square)](https://styleci.io/repos/74897031)
-[![Coverage Status](https://coveralls.io/repos/github/Fahl-Design/log4php-slack-appender/badge.svg?branch=master&format=flat-square)](https://coveralls.io/github/Fahl-Design/log4php-slack-appender?branch=master)
-[![codecov](https://codecov.io/gh/Fahl-Design/log4php-slack-appender/branch/master/graph/badge.svg)](https://codecov.io/gh/Fahl-Design/log4php-slack-appender)
+[![codecov](https://img.shields.io/codecov/c/github/Fahl-Design/log4php-slack-appender/master.svg?style=flat-square)](https://codecov.io/gh/Fahl-Design/log4php-slack-appender)
 
 ### Develop Branch
-[![Build Status](https://travis-ci.org/Fahl-Design/log4php-slack-appender.svg?branch=develop&format=flat-square)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
+[![Build Status](https://img.shields.io/travis/Fahl-Design/log4php-slack-appender/develop.svg?style=flat-square)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
 [![StyleCI](https://styleci.io/repos/74897031/shield?branch=develop&format=flat-square)](https://styleci.io/repos/74897031)
-[![Coverage Status](https://coveralls.io/repos/github/Fahl-Design/log4php-slack-appender/badge.svg?branch=develop&format=flat-square)](https://coveralls.io/github/Fahl-Design/log4php-slack-appender?branch=master)
-[![codecov](https://codecov.io/gh/Fahl-Design/log4php-slack-appender/branch/develop/graph/badge.svg)](https://codecov.io/gh/Fahl-Design/log4php-slack-appender)
+[![codecov](https://img.shields.io/codecov/c/github/Fahl-Design/log4php-slack-appender/develop.svg?style=flat-square)](https://codecov.io/gh/Fahl-Design/log4php-slack-appender)
 
 ## Description
 
