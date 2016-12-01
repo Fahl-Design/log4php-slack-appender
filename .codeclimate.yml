@@ -8,9 +8,14 @@ engines:
     enabled: true
   phpmd:
     enabled: true
+      config:
+        file_extensions:
+          - php
+        rulesets: "cleancode,codesize,controversial,naming,design,unusedcode"
 ratings:
   paths:
   - src/main/php/**
   - "**.php"
 exclude_paths:
   - "**/vendor/**/*"
+  - "**Test.php"
