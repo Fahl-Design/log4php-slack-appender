@@ -29,7 +29,7 @@ Read the instructions below to get it set up.
 
 ## Requirements
 
-PHP >= 5.2 || ^7.0
+PHP >= 5.2 || >= 7
 
 ## Installation
 
