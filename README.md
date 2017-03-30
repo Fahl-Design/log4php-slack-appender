@@ -101,6 +101,5 @@ $logger->debug('Hello World!');
 ```
 
 ## ToDo
-- Unit testing
 - Slack-Layout to handle attachments
 
