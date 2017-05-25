@@ -40,12 +40,11 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $this->assertSame($validEndpoint, $endpoint, 'endpoint value not correct');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage invalid endpoint
-     */
     public function testSetupAppenderInvalidEndpointUrlWasPassed()
     {
+        // Assert
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('invalid endpoint');
         // Arrange
         $appenderSlack = clone $this->_subject;
         $validEndpoint = 'invalid';
@@ -58,22 +57,21 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage username invalid
      * @dataProvider             _usernameData()
      *
      * @param $username
      */
     public function testSetupAppenderInvalidUsernameValue($username)
     {
+        // Assert
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('username invalid');
         // Arrange
         $appenderSlack = clone $this->_subject;
         // Act
         $appenderSlack
             ->setUsername($username)
         ;
-        // Assert
-        // error
     }
 
     public function _usernameData()

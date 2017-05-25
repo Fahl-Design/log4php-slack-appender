@@ -50,9 +50,5 @@ return PhpCsFixer\Config::create()
         PhpCsFixer\Finder::create()
             ->ignoreDotFiles(true)
             ->exclude('vendor')
-            ->exclude('tests/_support')
-            ->exclude('tests/_output')
-            ->in(__DIR__.'/module/Application')
-            ->in(__DIR__.'/tests')
-    )
-    ;
+            ->in(__DIR__.'/src')
+    );
