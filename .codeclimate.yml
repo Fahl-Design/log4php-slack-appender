@@ -19,3 +19,4 @@ ratings:
 exclude_paths:
   - "**/vendor/**/*"
   - "**Test.php"
+  - "**/bootstrap.php"

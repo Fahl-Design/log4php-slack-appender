@@ -12,6 +12,10 @@
 
 [![Code Climate](https://img.shields.io/codeclimate/github/Fahl-Design/log4php-slack-appender.svg?style=flat-square)](https://codeclimate.com/github/Fahl-Design/log4php-slack-appender/)
 [![Code Climate](https://img.shields.io/codeclimate/issues//github/Fahl-Design/log4php-slack-appender.svg?style=flat-square)](https://codeclimate.com/github/Fahl-Design/log4php-slack-appender/)
+
+
+[![PHP-Eye](https://php-eye.com/badge/fahl-design/log4php-slack-appender/tested.svg?style=flat-square)](https://packagist.org/packages/fahl-design/log4php-slack-appender)
+[![PHP-Eye](https://php-eye.com/badge/fahl-design/log4php-slack-appender/not-tested.svg?style=flat-square)](https://packagist.org/packages/fahl-design/log4php-slack-appender)
 ### Master Branch
 [![Build Status](https://img.shields.io/travis/Fahl-Design/log4php-slack-appender/master.svg?style=flat-square)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
 [![StyleCI](https://styleci.io/repos/74897031/shield?branch=master&format=flat-square)](https://styleci.io/repos/74897031)
@@ -101,6 +105,5 @@ $logger->debug('Hello World!');
 ```
 
 ## ToDo
-- Unit testing
 - Slack-Layout to handle attachments
 
