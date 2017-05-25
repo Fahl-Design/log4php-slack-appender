@@ -37,7 +37,7 @@ before_install:
   - git config --global user.email travis@webproject.xyz
 
 install:
-  - travis_retry composer install --no-interaction --ignore-platform-reqs
+  - travis_retry composer update --no-interaction --ignore-platform-reqs
   - phpunit --version
 
 script:
