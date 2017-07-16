@@ -38,7 +38,6 @@ before_install:
 
 install:
   - travis_retry composer update --no-interaction --ignore-platform-reqs
-  - ./vendor/bin/phpunit --version
 
 script:
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run ; fi
