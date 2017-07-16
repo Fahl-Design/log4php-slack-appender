@@ -12,6 +12,11 @@ engines:
       file_extensions:
         - php
       rulesets: "cleancode,codesize,controversial,naming,design,unusedcode"
+  phpcodesniffer:
+    enabled: true
+    config:
+      file_extensions: "php"
+      standard: "ZEND"
 ratings:
   paths:
   - src/main/php/**

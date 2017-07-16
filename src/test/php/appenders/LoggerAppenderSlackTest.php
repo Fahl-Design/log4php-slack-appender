@@ -26,8 +26,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
             ->setUsername('unitTester')
             ->setChannel('#phpunit')
             ->setIcon(':testing:')
-            ->setEndpoint($validEndpoint)
-        ;
+            ->setEndpoint($validEndpoint);
         // Act
         $username = self::getObjectAttribute($appenderSlack, '_username');
         $channel = self::getObjectAttribute($appenderSlack, '_channel');
@@ -51,8 +50,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $validEndpoint = 'invalid';
         // Act
         $appenderSlack
-            ->setEndpoint($validEndpoint)
-        ;
+            ->setEndpoint($validEndpoint);
         // Assert
         // error
     }
@@ -70,8 +68,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $appenderSlack = clone $this->_subject;
         // Act
         $appenderSlack
-            ->setUsername($username)
-        ;
+            ->setUsername($username);
         // Assert
         // error
     }
@@ -98,8 +95,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
             ->setUsername('unitTester')
             ->setChannel('#phpunit')
             ->setIcon(':testing:')
-            ->setEndpoint($validEndpoint)
-        ;
+            ->setEndpoint($validEndpoint);
         // Act
         $username = self::getObjectAttribute($appenderSlack, '_username');
         $channel = self::getObjectAttribute($appenderSlack, '_channel');
