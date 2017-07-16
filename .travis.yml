@@ -48,7 +48,7 @@ script:
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run ; fi
   - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then echo "zend_extension=xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0 ; fi
   - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then ./vendor/bin/phpunit --coverage-clover=coverage.xml ; fi
-  - if [[ $RUN_WITH_COVERAGE != 'true' ] && [ $PHPUNIT_FROM_SYSTEM == 'false' ]]; then ./vendor/bin/phpunit ; fi
+  - if [[ $PHPUNIT_FROM_SYSTEM != 'true' ]]; then ./vendor/bin/phpunit ; fi
   - if [[ $PHPUNIT_FROM_SYSTEM == 'true' ]]; then phpunit ; fi
 
 after_script:
