@@ -17,15 +17,13 @@
  * <samp>Hello World!</samp>
  *
  * @version    $Revision$
- * @package    log4php
- * @subpackage layouts
  */
 class LoggerLayoutSlack extends LoggerLayoutSimple
 {
     /**
      * Returns the log statement in a format consisting of the
      * <b>message</b>. For example,
-     * <samp> "A message" </samp>
+     * <samp> "A message" </samp>.
      *
      * @param LoggerLoggingEvent $event
      *
@@ -35,6 +33,6 @@ class LoggerLayoutSlack extends LoggerLayoutSimple
     {
         $message = $event->getRenderedMessage();
 
-        return "$message" . PHP_EOL;
+        return "$message".PHP_EOL;
     }
 }

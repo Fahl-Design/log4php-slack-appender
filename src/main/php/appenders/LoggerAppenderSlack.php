@@ -57,7 +57,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_sendLogAsAttachment = \true;
 
     /**
-     * Parsed level name from event
+     * Parsed level name from event.
      *
      * @var string
      */
@@ -112,12 +112,12 @@ class LoggerAppenderSlack extends LoggerAppender
             if ($this->_isAllowMarkdown()) {
                 $message->setText($this->_getMarkdownTitleText());
             } else {
-                $message->setText($this->getLevelName() . ' ' . $this->getName());
+                $message->setText($this->getLevelName().' '.$this->getName());
             }
             // inject formatted message from event
             $message->attach($this->_generateAttachment());
         } else {
-            $message->setText($this->getLevelName() . ' - '. $this->_getText());
+            $message->setText($this->getLevelName().' - '.$this->_getText());
         }
 
         // send message
@@ -292,17 +292,17 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get Flag for allowed markdown
+     * Get Flag for allowed markdown.
      *
      * @return bool
      */
     protected function _isAllowMarkdown()
     {
-        return (bool)$this->_allowMarkdown;
+        return (bool) $this->_allowMarkdown;
     }
 
     /**
-     * Set AllowMarkdown
+     * Set AllowMarkdown.
      *
      * @param bool $allowMarkdown
      *
@@ -310,23 +310,23 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setAllowMarkdown($allowMarkdown)
     {
-        $this->_allowMarkdown = (bool)$allowMarkdown;
+        $this->_allowMarkdown = (bool) $allowMarkdown;
 
         return $this;
     }
 
     /**
-     * Get SendLogAsAttachment
+     * Get SendLogAsAttachment.
      *
      * @return bool
      */
     protected function _isSendLogAsAttachment()
     {
-        return (bool)$this->_sendLogAsAttachment;
+        return (bool) $this->_sendLogAsAttachment;
     }
 
     /**
-     * Set SendLogAsAttachment
+     * Set SendLogAsAttachment.
      *
      * @param bool $sendLogAsAttachment
      *
@@ -334,12 +334,13 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setSendLogAsAttachment($sendLogAsAttachment)
     {
-        $this->_sendLogAsAttachment = (bool)$sendLogAsAttachment;
+        $this->_sendLogAsAttachment = (bool) $sendLogAsAttachment;
 
         return $this;
     }
 
     /**
+     * Generate attachment.
      *
      * @return \Maknz\Slack\Attachment
      */
@@ -349,20 +350,20 @@ class LoggerAppenderSlack extends LoggerAppender
         if ($this->_isAllowMarkdown()) {
             $at->setMarkdownFields(['text']);
         }
-        
+
         $at->setText($this->_getText());
 
         $at = $this->_setColorByLevelName($at);
-        
+
         $this->_addFieldLoggerName($at);
 
         $this->_addFieldDate($at);
-        
+
         return $at;
     }
 
     /**
-     * Get LevelName
+     * Get LevelName.
      *
      * @return string
      */
@@ -372,7 +373,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set LevelName
+     * Set LevelName.
      *
      * @param string $levelName
      *
@@ -386,18 +387,18 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get Title with markdown
+     * Get Title with markdown.
      *
      * @return string
      */
     protected function _getMarkdownTitleText()
     {
-        return '*' . $this->getLevelName() . '* '.
-            '_( Logger: *' . $this->getName() . '* )_';
+        return '*'.$this->getLevelName().'* '.
+            '_( Logger: *'.$this->getName().'* )_';
     }
 
     /**
-     * Get color by level name
+     * Get color by level name.
      *
      * @param \Maknz\Slack\Attachment $attachment
      *
@@ -406,19 +407,19 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _setColorByLevelName(\Maknz\Slack\Attachment $attachment)
     {
         switch ($this->getLevelName()) {
-            case ('DEBUG'):
+            case 'DEBUG':
                 $attachment->setColor('#BDBDBD');
                 break;
-            case ('INFO'):
+            case 'INFO':
                 $attachment->setColor('#64B5F6');
                 break;
-            case ('WARN'):
+            case 'WARN':
                 $attachment->setColor('#FFA726');
                 break;
-            case ('ERROR'):
+            case 'ERROR':
                 $attachment->setColor('#EF6C00');
                 break;
-            case ('FATAL'):
+            case 'FATAL':
                 $attachment->setColor('#D84315');
                 break;
             default:
@@ -429,7 +430,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Add logger name as attachment field
+     * Add logger name as attachment field.
      *
      * @param \Maknz\Slack\Attachment $attachment
      *
@@ -449,7 +450,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Add date as attachment field
+     * Add date as attachment field.
      *
      * @param \Maknz\Slack\Attachment $attachment
      *
