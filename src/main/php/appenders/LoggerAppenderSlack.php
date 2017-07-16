@@ -392,7 +392,8 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _setColorByLevelName(
         \Maknz\Slack\Attachment $attachment,
         $levelName
-    ) {
+    )
+    {
         switch ($levelName) {
             case 'DEBUG':
                 $attachment->setColor('#BDBDBD');
@@ -465,10 +466,9 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _setMessageTitle(\Maknz\Slack\Message $message)
     {
+        $message->setText($this->getLevelName() . ' ' . $this->getName());
         if ($this->_isAllowMarkdown()) {
             $message->setText($this->_getMarkdownTitleText());
-        } else {
-            $message->setText($this->getLevelName().' '.$this->getName());
         }
 
         return $message;
