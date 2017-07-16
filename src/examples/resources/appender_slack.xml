@@ -19,7 +19,9 @@
         <param name="endpoint" value="https://hooks.slack.com/services/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX" />
         <param name="channel" value="#yourChannel" />
         <param name="username" value="Log4php" />
-        <param name="icon" value=":ghost:" />
+        <param name="icon" value=":do_not_litter:" />
+        <param name="allowMarkdown" value="1" />
+        <param name="sendLogAsAttachment" value="1" />
     </appender>
     <logger name="myLogger">
         <appender_ref ref="default" />

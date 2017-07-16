@@ -47,6 +47,23 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_text;
 
     /**
+     * @var bool
+     */
+    protected $_allowMarkdown = \true;
+
+    /**
+     * @var bool
+     */
+    protected $_sendLogAsAttachment = \true;
+
+    /**
+     * Parsed level name from event
+     *
+     * @var string
+     */
+    protected $_levelName;
+
+    /**
      * Get Text.
      *
      * @return string
@@ -57,13 +74,13 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Overwrite layout with LoggerLayoutSimple.
+     * Overwrite layout with LoggerLayoutSlack.
      *
-     * @return LoggerLayoutSimple
+     * @return LoggerLayoutSlack
      */
     public function getDefaultLayout()
     {
-        return new LoggerLayoutSimple();
+        return new LoggerLayoutSlack();
     }
 
     /**
@@ -87,8 +104,22 @@ class LoggerAppenderSlack extends LoggerAppender
         $message->setIcon($this->_getIcon());
         // set channel
         $message->setChannel($this->_getChannel());
-        // inject formatted message from event
-        $message->setText($this->_getText());
+        // allow markdown in message
+        $message->setAllowMarkdown($this->_isAllowMarkdown());
+
+        if (\true === $this->_isSendLogAsAttachment()) {
+            // set name of logger as text
+            if ($this->_isAllowMarkdown()) {
+                $message->setText($this->_getMarkdownTitleText());
+            } else {
+                $message->setText($this->getLevelName() . ' ' . $this->getName());
+            }
+            // inject formatted message from event
+            $message->attach($this->_generateAttachment());
+        } else {
+            $message->setText($this->getLevelName() . ' - '. $this->_getText());
+        }
+
         // send message
         $message->send();
     }
@@ -103,6 +134,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _formatEventToText(LoggerLoggingEvent $event)
     {
         $this->_text = trim($this->layout->format($event));
+        $this->_setLevelName($event->getLevel()->toString());
 
         return $this;
     }
@@ -257,5 +289,182 @@ class LoggerAppenderSlack extends LoggerAppender
         $this->_channel = $channel;
 
         return $this;
+    }
+
+    /**
+     * Get Flag for allowed markdown
+     *
+     * @return bool
+     */
+    protected function _isAllowMarkdown()
+    {
+        return (bool)$this->_allowMarkdown;
+    }
+
+    /**
+     * Set AllowMarkdown
+     *
+     * @param bool $allowMarkdown
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setAllowMarkdown($allowMarkdown)
+    {
+        $this->_allowMarkdown = (bool)$allowMarkdown;
+
+        return $this;
+    }
+
+    /**
+     * Get SendLogAsAttachment
+     *
+     * @return bool
+     */
+    protected function _isSendLogAsAttachment()
+    {
+        return (bool)$this->_sendLogAsAttachment;
+    }
+
+    /**
+     * Set SendLogAsAttachment
+     *
+     * @param bool $sendLogAsAttachment
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setSendLogAsAttachment($sendLogAsAttachment)
+    {
+        $this->_sendLogAsAttachment = (bool)$sendLogAsAttachment;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return \Maknz\Slack\Attachment
+     */
+    protected function _generateAttachment()
+    {
+        $at = new \Maknz\Slack\Attachment([]);
+        if ($this->_isAllowMarkdown()) {
+            $at->setMarkdownFields(['text']);
+        }
+        
+        $at->setText($this->_getText());
+
+        $at = $this->_setColorByLevelName($at);
+        
+        $this->_addFieldLoggerName($at);
+
+        $this->_addFieldDate($at);
+        
+        return $at;
+    }
+
+    /**
+     * Get LevelName
+     *
+     * @return string
+     */
+    public function getLevelName()
+    {
+        return $this->_levelName;
+    }
+
+    /**
+     * Set LevelName
+     *
+     * @param string $levelName
+     *
+     * @return LoggerAppenderSlack
+     */
+    protected function _setLevelName($levelName)
+    {
+        $this->_levelName = $levelName;
+
+        return $this;
+    }
+
+    /**
+     * Get Title with markdown
+     *
+     * @return string
+     */
+    protected function _getMarkdownTitleText()
+    {
+        return '*' . $this->getLevelName() . '* '.
+            '_( Logger: *' . $this->getName() . '* )_';
+    }
+
+    /**
+     * Get color by level name
+     *
+     * @param \Maknz\Slack\Attachment $attachment
+     *
+     * @return \Maknz\Slack\Attachment
+     */
+    protected function _setColorByLevelName(\Maknz\Slack\Attachment $attachment)
+    {
+        switch ($this->getLevelName()) {
+            case ('DEBUG'):
+                $attachment->setColor('#BDBDBD');
+                break;
+            case ('INFO'):
+                $attachment->setColor('#64B5F6');
+                break;
+            case ('WARN'):
+                $attachment->setColor('#FFA726');
+                break;
+            case ('ERROR'):
+                $attachment->setColor('#EF6C00');
+                break;
+            case ('FATAL'):
+                $attachment->setColor('#D84315');
+                break;
+            default:
+                $attachment->setColor('good');
+        }
+
+        return $attachment;
+    }
+
+    /**
+     * Add logger name as attachment field
+     *
+     * @param \Maknz\Slack\Attachment $attachment
+     *
+     * @return \Maknz\Slack\Attachment
+     */
+    protected function _addFieldLoggerName(\Maknz\Slack\Attachment $attachment)
+    {
+        $loggerField = new \Maknz\Slack\AttachmentField([]);
+        $loggerField
+            ->setTitle('Logger')
+            ->setValue($this->getName())
+            ->setShort(\true);
+
+        $attachment->addField($loggerField);
+
+        return $attachment;
+    }
+
+    /**
+     * Add date as attachment field
+     *
+     * @param \Maknz\Slack\Attachment $attachment
+     *
+     * @return \Maknz\Slack\Attachment
+     */
+    protected function _addFieldDate(\Maknz\Slack\Attachment $attachment)
+    {
+        $dateField = new \Maknz\Slack\AttachmentField([]);
+        $dateField
+            ->setTitle('Date')
+            ->setValue((new \DateTime())->format('Y-m-d H:i:s'))
+            ->setShort(\true);
+
+        $attachment->addField($dateField);
+
+        return $attachment;
     }
 }
