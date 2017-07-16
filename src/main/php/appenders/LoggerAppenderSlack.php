@@ -1,4 +1,7 @@
 <?php
+use Maknz\Slack\Attachment;
+use Maknz\Slack\Client;
+
 /**
  * LoggerAppenderSlack appends log events to a Slack channel.
  *
@@ -54,7 +57,7 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * @var bool
      */
-    protected $_sendLogAsAttachment = \true;
+    protected $_asAttachment = \true;
 
     /**
      * Parsed level name from event.
@@ -134,11 +137,11 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Set SlackClient.
      *
-     * @param \Maknz\Slack\Client $client
+     * @param Client $client
      *
      * @return LoggerAppenderSlack
      */
-    public function setSlackClient(\Maknz\Slack\Client $client = null)
+    public function setSlackClient(Client $client = null)
     {
         $this->_slackClient = $client;
 
@@ -152,7 +155,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _initSlackClient()
     {
-        $slackClient = new Maknz\Slack\Client($this->_getEndpoint());
+        $slackClient = new Client($this->_getEndpoint());
 
         $this->_slackClient = $slackClient;
 
@@ -301,9 +304,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return bool
      */
-    protected function _isSendLogAsAttachment()
+    protected function _sendLogAsAttachment()
     {
-        return (bool) $this->_sendLogAsAttachment;
+        return (bool) $this->_asAttachment;
     }
 
     /**
@@ -313,9 +316,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return LoggerAppenderSlack
      */
-    public function setSendLogAsAttachment($sendLogAsAttachment)
+    public function setAsAttachment($sendLogAsAttachment)
     {
-        $this->_sendLogAsAttachment = (bool) $sendLogAsAttachment;
+        $this->_asAttachment = (bool) $sendLogAsAttachment;
 
         return $this;
     }
@@ -323,11 +326,11 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Generate attachment.
      *
-     * @return \Maknz\Slack\Attachment
+     * @return Attachment
      */
     protected function _generateAttachment()
     {
-        $attachment = new \Maknz\Slack\Attachment([]);
+        $attachment = new Attachment([]);
         if ($this->_isAllowMarkdown()) {
             $attachment->setMarkdownFields(['text']);
         }
@@ -384,15 +387,12 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Get color by level name.
      *
-     * @param \Maknz\Slack\Attachment $attachment
+     * @param Attachment $attachment
      * @param string                  $levelName
      *
-     * @return \Maknz\Slack\Attachment
+     * @return Attachment
      */
-    protected function _setColorByLevelName(
-        \Maknz\Slack\Attachment $attachment,
-        $levelName
-    )
+    protected function _setColorByLevelName(Attachment $attachment, $levelName)
     {
         switch ($levelName) {
             case 'DEBUG':
@@ -420,11 +420,11 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Add logger name as attachment field.
      *
-     * @param \Maknz\Slack\Attachment $attachment
+     * @param Attachment $attachment
      *
-     * @return \Maknz\Slack\Attachment
+     * @return Attachment
      */
-    protected function _addFieldLoggerName(\Maknz\Slack\Attachment $attachment)
+    protected function _addFieldLoggerName(Attachment $attachment)
     {
         $loggerField = new \Maknz\Slack\AttachmentField([]);
         $loggerField
@@ -440,11 +440,11 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Add date as attachment field.
      *
-     * @param \Maknz\Slack\Attachment $attachment
+     * @param Attachment $attachment
      *
-     * @return \Maknz\Slack\Attachment
+     * @return Attachment
      */
-    protected function _addFieldDate(\Maknz\Slack\Attachment $attachment)
+    protected function _addFieldDate(Attachment $attachment)
     {
         $dateField = new \Maknz\Slack\AttachmentField([]);
         $dateField
@@ -492,7 +492,7 @@ class LoggerAppenderSlack extends LoggerAppender
         // allow markdown in message
         $message->setAllowMarkdown($this->_isAllowMarkdown());
         // send log message as attachment
-        if (\true === $this->_isSendLogAsAttachment()) {
+        if (\true === $this->_sendLogAsAttachment()) {
             // inject formatted message from event
             $message->attach($this->_generateAttachment());
         }
