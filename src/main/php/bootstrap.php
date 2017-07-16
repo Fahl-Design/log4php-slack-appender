@@ -5,3 +5,4 @@
  * @codeCoverageIgnore
  */
 require_once __DIR__.'/appenders/LoggerAppenderSlack.php';
+require_once __DIR__.'/layouts/LoggerLayoutSlack.php';
