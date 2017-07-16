@@ -388,7 +388,7 @@ class LoggerAppenderSlack extends LoggerAppender
      * Get color by level name.
      *
      * @param Attachment $attachment
-     * @param string                  $levelName
+     * @param string     $levelName
      *
      * @return Attachment
      */
