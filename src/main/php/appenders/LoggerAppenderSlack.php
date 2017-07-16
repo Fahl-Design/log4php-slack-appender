@@ -6,7 +6,7 @@
  * @since      2.4.0
  *
  * @author     Benjamin Fahl <ben@webproject.xyz>
- * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, v2.0
  *
  * @link       http://logging.apache.org/log4php
  */
@@ -170,7 +170,9 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setEndpoint($endpoint)
     {
-        if (true === is_string($endpoint) && 0 === strpos($endpoint, self::ENDPOINT_VALIDATION_STRING, 0)) {
+        if (true === is_string($endpoint)
+            && 0 === strpos($endpoint, self::ENDPOINT_VALIDATION_STRING)
+        ) {
             $this->_endpoint = $endpoint;
         } else {
             throw new \InvalidArgumentException('invalid endpoint');
