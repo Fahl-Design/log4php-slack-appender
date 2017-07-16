@@ -40,6 +40,6 @@ script:
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then composer cs-check; fi
   - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then composer run-tests; fi
   - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then composer coverage; fi
-
+  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then bash <(curl -s https://codecov.io/bash) ; fi
 notifications:
   email: false
