@@ -36,7 +36,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $icon = self::getObjectAttribute($appenderSlack, '_icon');
         $endpoint = self::getObjectAttribute($appenderSlack, '_endpoint');
         $allowMarkdown = self::getObjectAttribute($appenderSlack, '_allowMarkdown');
-        $logAsAttachment = self::getObjectAttribute($appenderSlack, 'asAttachment');
+        $logAsAttachment = self::getObjectAttribute($appenderSlack, '_asAttachment');
         // Assert
         $this->assertSame('unitTester', $username, 'username value not correct');
         $this->assertSame('#phpunit', $channel, 'channel value not correct');
