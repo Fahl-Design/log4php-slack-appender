@@ -38,13 +38,13 @@ before_install:
 
 install:
   - travis_retry composer update --no-interaction --ignore-platform-reqs
-  - phpunit --version
+  - ./vendor/bin/phpunit --version
 
 script:
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run ; fi
   - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then echo "zend_extension=xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0 ; fi
   - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then ./vendor/bin/phpunit --coverage-clover=coverage.xml ; fi
-  - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then phpunit ; fi
+  - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then ./vendor/bin/phpunit ; fi
 
 after_script:
   - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then bash <(curl -s https://codecov.io/bash) ; fi
