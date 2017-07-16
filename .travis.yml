@@ -8,8 +8,8 @@ cache:
     - $HOME/.local
 
 env:
-  RUN_WITH_COVERAGE=false
-  PHPUNIT_FROM_SYSTEM=false
+  - RUN_WITH_COVERAGE=false
+  - PHPUNIT_FROM_SYSTEM=false
 
 php:
   - 5.5
