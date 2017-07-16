@@ -184,6 +184,7 @@ class LoggerAppenderSlack extends LoggerAppender
             && 0 === strpos($endpoint, self::ENDPOINT_VALIDATION_STRING)
         ) {
             $this->_endpoint = $endpoint;
+
             return $this;
         }
 
