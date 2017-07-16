@@ -10,21 +10,17 @@ cache:
 env:
   RUN_WITH_COVERAGE=false
 
-php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
-  - hhvm
-  - nightly
-
 matrix:
+  fast_finish: true
   include:
+    - php: 5.5
     - php: 5.6
-      env:
-       - EXECUTE_CS_CHECK=true
-       - RUN_WITH_COVERAGE=true
-       - PATH="$HOME/.local/bin:$PATH"
+      env: EXECUTE_CS_CHECK=true RUN_WITH_COVERAGE=true PATH="$HOME/.local/bin:$PATH"
+    - php: 7.0
+    - php: 7.0
+    - php: 7.1
+    - php: nightly
+    - php: hhvm
 
   allow_failures:
     - php: hhvm
@@ -37,18 +33,15 @@ before_install:
   - git config --global user.email travis@webproject.xyz
 
 install:
-  - travis_retry composer update --no-interaction --ignore-platform-reqs
+  - travis_retry composer update --no-interaction
   - phpunit --version
 
 script:
-  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run ; fi
-  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then echo "zend_extension=xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0 ; fi
-  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then ./vendor/bin/phpunit --coverage-clover=coverage.xml ; fi
-  - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then phpunit ; fi
-
-after_script:
+  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then composer cs-check; fi
+  - if [[ $RUN_WITH_COVERAGE != 'true' ]]; then composer run-tests; fi
+  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then echo zend_extension=xdebug.so >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0; fi
+  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then composer coverage; fi
   - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then bash <(curl -s https://codecov.io/bash) ; fi
-  - if [[ $RUN_WITH_COVERAGE == 'true' ]]; then ./vendor/bin/test-reporter --coverage-report=coverage.xml ; fi
 
 notifications:
   email: false

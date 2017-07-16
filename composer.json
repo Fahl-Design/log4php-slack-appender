@@ -32,5 +32,21 @@
     "branch-alias": {
       "dev-develop": "1.x-dev"
     }
+  },
+  "scripts": {
+    "run-tests": [
+      "./vendor/bin/phpunit --config=phpunit.xml"
+    ],
+    "cs-check": [
+      "./vendor/bin/php-cs-fixer fix --dry-run -vv"
+    ],
+    "coverage": [
+      "echo 'Activating xDebug'",
+      "echo 'zend_extension=xdebug.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0",
+      "echo 'Build coverage'",
+      "./vendor/bin/phpunit --coverage-clover=coverage.xml",
+      "echo 'Send coverage'",
+      "./vendor/bin/test-reporter --coverage-report=coverage.xml || return 0"
+    ]
   }
 }

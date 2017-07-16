@@ -1,4 +1,8 @@
 <?php
+
+use Maknz\Slack\Attachment;
+use Maknz\Slack\Client;
+
 /**
  * LoggerAppenderSlack appends log events to a Slack channel.
  *
@@ -6,9 +10,9 @@
  * @since      2.4.0
  *
  * @author     Benjamin Fahl <ben@webproject.xyz>
- * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, v2.0
  *
- * @link       http://graylog2.org/ Graylog2 website
+ * @link       http://logging.apache.org/log4php
  */
 class LoggerAppenderSlack extends LoggerAppender
 {
@@ -47,6 +51,23 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_text;
 
     /**
+     * @var bool
+     */
+    protected $_allowMarkdown = \true;
+
+    /**
+     * @var bool
+     */
+    protected $_asAttachment = \true;
+
+    /**
+     * Parsed level name from event.
+     *
+     * @var string
+     */
+    protected $_levelName;
+
+    /**
      * Get Text.
      *
      * @return string
@@ -57,13 +78,13 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Overwrite layout with LoggerLayoutSimple.
+     * Overwrite layout with LoggerLayoutSlack.
      *
-     * @return LoggerLayoutSimple
+     * @return LoggerLayoutSlack
      */
     public function getDefaultLayout()
     {
-        return new LoggerLayoutSimple();
+        return new LoggerLayoutSlack();
     }
 
     /**
@@ -78,17 +99,9 @@ class LoggerAppenderSlack extends LoggerAppender
         // format text with layout
         $this->_formatEventToText($event);
         // get slack client
-        $slackClient = $this->_getSlackClient();
-        // create message
-        $message = new \Maknz\Slack\Message($slackClient);
-        // set username
-        $message->setUsername($this->_getUsername());
-        // set icon
-        $message->setIcon($this->_getIcon());
-        // set channel
-        $message->setChannel($this->_getChannel());
-        // inject formatted message from event
-        $message->setText($this->_getText());
+        $this->_getSlackClient();
+        // generate message
+        $message = $this->generateMessage();
         // send message
         $message->send();
     }
@@ -103,6 +116,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _formatEventToText(LoggerLoggingEvent $event)
     {
         $this->_text = trim($this->layout->format($event));
+        $this->_setLevelName($event->getLevel()->toString());
 
         return $this;
     }
@@ -124,11 +138,11 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Set SlackClient.
      *
-     * @param \Maknz\Slack\Client $client
+     * @param Client $client
      *
      * @return LoggerAppenderSlack
      */
-    public function setSlackClient(\Maknz\Slack\Client $client = null)
+    public function setSlackClient(Client $client = null)
     {
         $this->_slackClient = $client;
 
@@ -142,7 +156,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _initSlackClient()
     {
-        $slackClient = new Maknz\Slack\Client($this->_getEndpoint());
+        $slackClient = new Client($this->_getEndpoint());
 
         $this->_slackClient = $slackClient;
 
@@ -170,13 +184,15 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setEndpoint($endpoint)
     {
-        if (true === is_string($endpoint) && 0 === strpos($endpoint, self::ENDPOINT_VALIDATION_STRING, 0)) {
+        if (true === is_string($endpoint)
+            && 0 === strpos($endpoint, self::ENDPOINT_VALIDATION_STRING)
+        ) {
             $this->_endpoint = $endpoint;
-        } else {
-            throw new \InvalidArgumentException('invalid endpoint');
+
+            return $this;
         }
 
-        return $this;
+        throw new \InvalidArgumentException('invalid endpoint');
     }
 
     /**
@@ -202,11 +218,11 @@ class LoggerAppenderSlack extends LoggerAppender
     {
         if (!empty($username) && is_string($username)) {
             $this->_username = (string) $username;
-        } else {
-            throw new \InvalidArgumentException('username invalid');
+
+            return $this;
         }
 
-        return $this;
+        throw new \InvalidArgumentException('username invalid');
     }
 
     /**
@@ -255,5 +271,235 @@ class LoggerAppenderSlack extends LoggerAppender
         $this->_channel = $channel;
 
         return $this;
+    }
+
+    /**
+     * Get Flag for allowed markdown.
+     *
+     * @return bool
+     */
+    protected function _isAllowMarkdown()
+    {
+        return (bool) $this->_allowMarkdown;
+    }
+
+    /**
+     * Set AllowMarkdown.
+     *
+     * @param bool|string $allowMarkdown
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setAllowMarkdown($allowMarkdown)
+    {
+        if (is_string($allowMarkdown) && $allowMarkdown === 'false') {
+            $allowMarkdown = false;
+        }
+        $this->_allowMarkdown = (bool) $allowMarkdown;
+
+        return $this;
+    }
+
+    /**
+     * Get SendLogAsAttachment.
+     *
+     * @return bool
+     */
+    protected function _sendLogAsAttachment()
+    {
+        return (bool) $this->_asAttachment;
+    }
+
+    /**
+     * Set SendLogAsAttachment.
+     *
+     * @param bool $sendLogAsAttachment
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setAsAttachment($sendLogAsAttachment)
+    {
+        $this->_asAttachment = (bool) $sendLogAsAttachment;
+
+        return $this;
+    }
+
+    /**
+     * Generate attachment.
+     *
+     * @return Attachment
+     */
+    protected function _generateAttachment()
+    {
+        $attachment = new Attachment([]);
+        if ($this->_isAllowMarkdown()) {
+            $attachment->setMarkdownFields(['text']);
+        }
+        // add text to attachment
+        $attachment->setText($this->_getText());
+        // inject color to attachment
+        $attachment = $this->_setColorByLevelName(
+            $attachment,
+            $this->getLevelName()
+        );
+        // inject field of logger name
+        $attachment = $this->_addFieldLoggerName($attachment);
+        // inject field of date
+        $attachment = $this->_addFieldDate($attachment);
+
+        return $attachment;
+    }
+
+    /**
+     * Get LevelName.
+     *
+     * @return string
+     */
+    public function getLevelName()
+    {
+        return $this->_levelName;
+    }
+
+    /**
+     * Set LevelName.
+     *
+     * @param string $levelName
+     *
+     * @return LoggerAppenderSlack
+     */
+    protected function _setLevelName($levelName)
+    {
+        $this->_levelName = $levelName;
+
+        return $this;
+    }
+
+    /**
+     * Get Title with markdown.
+     *
+     * @return string
+     */
+    protected function _getMarkdownTitleText()
+    {
+        return '*'.$this->getLevelName().'* '.
+            '_( Logger: *'.$this->getName().'* )_';
+    }
+
+    /**
+     * Get color by level name.
+     *
+     * @param Attachment $attachment
+     * @param string     $levelName
+     *
+     * @return Attachment
+     */
+    protected function _setColorByLevelName(Attachment $attachment, $levelName)
+    {
+        switch ($levelName) {
+            case 'DEBUG':
+                $attachment->setColor('#BDBDBD');
+                break;
+            case 'INFO':
+                $attachment->setColor('#64B5F6');
+                break;
+            case 'WARN':
+                $attachment->setColor('#FFA726');
+                break;
+            case 'ERROR':
+                $attachment->setColor('#EF6C00');
+                break;
+            case 'FATAL':
+                $attachment->setColor('#D84315');
+                break;
+            default:
+                $attachment->setColor('good');
+        }
+
+        return $attachment;
+    }
+
+    /**
+     * Add logger name as attachment field.
+     *
+     * @param Attachment $attachment
+     *
+     * @return Attachment
+     */
+    protected function _addFieldLoggerName(Attachment $attachment)
+    {
+        $loggerField = new \Maknz\Slack\AttachmentField([]);
+        $loggerField
+            ->setTitle('Logger')
+            ->setValue($this->getName())
+            ->setShort(\true);
+
+        $attachment->addField($loggerField);
+
+        return $attachment;
+    }
+
+    /**
+     * Add date as attachment field.
+     *
+     * @param Attachment $attachment
+     *
+     * @return Attachment
+     */
+    protected function _addFieldDate(Attachment $attachment)
+    {
+        $dateField = new \Maknz\Slack\AttachmentField([]);
+        $dateField
+            ->setTitle('Date')
+            ->setValue((new \DateTime())->format('Y-m-d H:i:s'))
+            ->setShort(\true);
+
+        $attachment->addField($dateField);
+
+        return $attachment;
+    }
+
+    /**
+     * Set message title.
+     *
+     * @param \Maknz\Slack\Message $message
+     *
+     * @return \Maknz\Slack\Message
+     */
+    protected function _setMessageTitle(\Maknz\Slack\Message $message)
+    {
+        $message->setText($this->getLevelName().' '.$this->getName());
+        if ($this->_isAllowMarkdown()) {
+            $message->setText($this->_getMarkdownTitleText());
+        }
+
+        return $message;
+    }
+
+    /**
+     * Generate message to send.
+     *
+     * @return \Maknz\Slack\Message
+     */
+    public function generateMessage()
+    {
+        // create message
+        $message = new \Maknz\Slack\Message($this->_getSlackClient());
+        // set username
+        $message->setUsername($this->_getUsername());
+        // set icon
+        $message->setIcon($this->_getIcon());
+        // set channel
+        $message->setChannel($this->_getChannel());
+        // allow markdown in message
+        $message->setAllowMarkdown($this->_isAllowMarkdown());
+        // send log message as attachment
+        if (\true === $this->_sendLogAsAttachment()) {
+            // inject formatted message from event
+            $message->attach($this->_generateAttachment());
+        }
+        // set name of logger as text
+        $message = $this->_setMessageTitle($message);
+
+        return $message;
     }
 }
