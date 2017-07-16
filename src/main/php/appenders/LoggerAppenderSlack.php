@@ -466,7 +466,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _setMessageTitle(\Maknz\Slack\Message $message)
     {
-        $message->setText($this->getLevelName() . ' ' . $this->getName());
+        $message->setText($this->getLevelName().' '.$this->getName());
         if ($this->_isAllowMarkdown()) {
             $message->setText($this->_getMarkdownTitleText());
         }
