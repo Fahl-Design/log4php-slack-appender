@@ -95,31 +95,9 @@ class LoggerAppenderSlack extends LoggerAppender
         // format text with layout
         $this->_formatEventToText($event);
         // get slack client
-        $slackClient = $this->_getSlackClient();
-        // create message
-        $message = new \Maknz\Slack\Message($slackClient);
-        // set username
-        $message->setUsername($this->_getUsername());
-        // set icon
-        $message->setIcon($this->_getIcon());
-        // set channel
-        $message->setChannel($this->_getChannel());
-        // allow markdown in message
-        $message->setAllowMarkdown($this->_isAllowMarkdown());
-
-        if (\true === $this->_isSendLogAsAttachment()) {
-            // set name of logger as text
-            if ($this->_isAllowMarkdown()) {
-                $message->setText($this->_getMarkdownTitleText());
-            } else {
-                $message->setText($this->getLevelName().' '.$this->getName());
-            }
-            // inject formatted message from event
-            $message->attach($this->_generateAttachment());
-        } else {
-            $message->setText($this->getLevelName().' - '.$this->_getText());
-        }
-
+        $this->_getSlackClient();
+        // generate message
+        $message = $this->generateMessage();
         // send message
         $message->send();
     }
@@ -304,12 +282,15 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Set AllowMarkdown.
      *
-     * @param bool $allowMarkdown
+     * @param bool|string $allowMarkdown
      *
      * @return LoggerAppenderSlack
      */
     public function setAllowMarkdown($allowMarkdown)
     {
+        if (is_string($allowMarkdown) && $allowMarkdown === 'false') {
+            $allowMarkdown = false;
+        }
         $this->_allowMarkdown = (bool) $allowMarkdown;
 
         return $this;
@@ -346,20 +327,23 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _generateAttachment()
     {
-        $at = new \Maknz\Slack\Attachment([]);
+        $attachment = new \Maknz\Slack\Attachment([]);
         if ($this->_isAllowMarkdown()) {
-            $at->setMarkdownFields(['text']);
+            $attachment->setMarkdownFields(['text']);
         }
+        // add text to attachment
+        $attachment->setText($this->_getText());
+        // inject color to attachment
+        $attachment = $this->_setColorByLevelName(
+            $attachment,
+            $this->getLevelName()
+        );
+        // inject field of logger name
+        $attachment = $this->_addFieldLoggerName($attachment);
+        // inject field of date
+        $attachment = $this->_addFieldDate($attachment);
 
-        $at->setText($this->_getText());
-
-        $at = $this->_setColorByLevelName($at);
-
-        $this->_addFieldLoggerName($at);
-
-        $this->_addFieldDate($at);
-
-        return $at;
+        return $attachment;
     }
 
     /**
@@ -402,11 +386,15 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param \Maknz\Slack\Attachment $attachment
      *
+     * @param string                  $levelName
+     *
      * @return \Maknz\Slack\Attachment
      */
-    protected function _setColorByLevelName(\Maknz\Slack\Attachment $attachment)
-    {
-        switch ($this->getLevelName()) {
+    protected function _setColorByLevelName(
+        \Maknz\Slack\Attachment $attachment,
+        $levelName
+    ) {
+        switch ($levelName) {
             case 'DEBUG':
                 $attachment->setColor('#BDBDBD');
                 break;
@@ -467,5 +455,51 @@ class LoggerAppenderSlack extends LoggerAppender
         $attachment->addField($dateField);
 
         return $attachment;
+    }
+
+    /**
+     * Set message title.
+     *
+     * @param \Maknz\Slack\Message $message
+     *
+     * @return \Maknz\Slack\Message
+     */
+    protected function _setMessageTitle(\Maknz\Slack\Message $message)
+    {
+        if ($this->_isAllowMarkdown()) {
+            $message->setText($this->_getMarkdownTitleText());
+        } else {
+            $message->setText($this->getLevelName() . ' ' . $this->getName());
+        }
+
+        return $message;
+    }
+
+    /**
+     * Generate message to send.
+     *
+     * @return \Maknz\Slack\Message
+     */
+    public function generateMessage()
+    {
+        // create message
+        $message = new \Maknz\Slack\Message($this->_getSlackClient());
+        // set username
+        $message->setUsername($this->_getUsername());
+        // set icon
+        $message->setIcon($this->_getIcon());
+        // set channel
+        $message->setChannel($this->_getChannel());
+        // allow markdown in message
+        $message->setAllowMarkdown($this->_isAllowMarkdown());
+        // send log message as attachment
+        if (\true === $this->_isSendLogAsAttachment()) {
+            // inject formatted message from event
+            $message->attach($this->_generateAttachment());
+        }
+        // set name of logger as text
+        $message = $this->_setMessageTitle($message);
+
+        return $message;
     }
 }
