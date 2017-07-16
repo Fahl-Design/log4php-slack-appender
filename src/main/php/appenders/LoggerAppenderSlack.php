@@ -8,7 +8,7 @@
  * @author     Benjamin Fahl <ben@webproject.xyz>
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  *
- * @link       http://graylog2.org/ Graylog2 website
+ * @link       http://logging.apache.org/log4php
  */
 class LoggerAppenderSlack extends LoggerAppender
 {
