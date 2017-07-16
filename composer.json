@@ -47,7 +47,7 @@
       "./vendor/bin/phpunit --coverage-clover=coverage.xml",
       "echo 'Send coverage'",
       "./vendor/bin/test-reporter --coverage-report=coverage.xml",
-      "bash <(curl -s https://codecov.io/bash"
+      "bash <(curl -s https://codecov.io/bash)"
     ]
   }
 }
