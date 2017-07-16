@@ -1,4 +1,5 @@
 <?php
+
 use Maknz\Slack\Attachment;
 use Maknz\Slack\Client;
 
