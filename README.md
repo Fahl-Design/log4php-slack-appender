@@ -33,7 +33,7 @@ Read the instructions below to get it set up.
 
 ## Requirements
 
-PHP >= 5.2 || >= 7
+PHP >= 5.5 || >= 7
 
 ## Installation
 
@@ -50,19 +50,21 @@ After you got your hook url add it as endpoint to your configuration
 ### XML appender config example
 ```xml
     <log4php:configuration xmlns:log4php="http://logging.apache.org/log4php/" threshold="all">
-        <appender name="default" class="LoggerAppenderSlack">
+        <appender name="appender_slack" class="LoggerAppenderSlack">
             <!-- get endpoint url from https://my.slack.com/services/new/incoming-webhook -->
             <param name="endpoint" value="https://hooks.slack.com/services/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX" />
             <param name="channel" value="#yourChannel" />
             <param name="username" value="Log4php" />
-            <param name="icon" value=":ghost:" />
+            <!-- Url or emoji-->
+            <param name="icon" value=":do_not_litter:" />
+            <!-- flag to allow markdown (default 1) -->
+            <param name="allowMarkdown" value="1" />
+            <!-- flag to send log message as slack attachment (default 1) -->
+            <param name="asAttachment" value="1" />
         </appender>
         <logger name="myLogger">
-            <appender_ref ref="default" />
+            <appender_ref ref="appender_slack" />
         </logger>
-        <root>
-            <level value="DEBUG" />
-        </root>
     </log4php:configuration>
 ```
 
@@ -97,13 +99,16 @@ Check example (src/examples)
 
 
 ```php
+require_once __DIR__.'/../../../vendor/autoload.php';
+
 Logger::configure(__DIR__.'/../resources/appender_slack.xml');
 
 $logger = Logger::getLogger('myLogger');
-$logger->debug('Hello World!');
+$logger->debug('debug-message');
+$logger->info('info-message');
+$logger->warn('warn-message');
+$logger->error('error-message');
+$logger->fatal('fatal-message');
 
 ```
-
-## ToDo
-- Slack-Layout to handle attachments
 
