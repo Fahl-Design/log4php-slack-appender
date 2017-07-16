@@ -385,7 +385,6 @@ class LoggerAppenderSlack extends LoggerAppender
      * Get color by level name.
      *
      * @param \Maknz\Slack\Attachment $attachment
-     *
      * @param string                  $levelName
      *
      * @return \Maknz\Slack\Attachment
@@ -469,7 +468,7 @@ class LoggerAppenderSlack extends LoggerAppender
         if ($this->_isAllowMarkdown()) {
             $message->setText($this->_getMarkdownTitleText());
         } else {
-            $message->setText($this->getLevelName() . ' ' . $this->getName());
+            $message->setText($this->getLevelName().' '.$this->getName());
         }
 
         return $message;
