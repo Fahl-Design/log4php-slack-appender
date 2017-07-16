@@ -11,7 +11,7 @@ engines:
     config:
       file_extensions:
         - php
-      rulesets: "cleancode,codesize,controversial,naming,design,unusedcode"
+      rulesets: "cleancode,codesize,controversial,design,unusedcode"
   phpcodesniffer:
     enabled: true
     config:

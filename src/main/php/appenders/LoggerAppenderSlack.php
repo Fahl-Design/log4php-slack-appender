@@ -184,11 +184,10 @@ class LoggerAppenderSlack extends LoggerAppender
             && 0 === strpos($endpoint, self::ENDPOINT_VALIDATION_STRING)
         ) {
             $this->_endpoint = $endpoint;
-        } else {
-            throw new \InvalidArgumentException('invalid endpoint');
+            return $this;
         }
 
-        return $this;
+        throw new \InvalidArgumentException('invalid endpoint');
     }
 
     /**
@@ -214,11 +213,11 @@ class LoggerAppenderSlack extends LoggerAppender
     {
         if (!empty($username) && is_string($username)) {
             $this->_username = (string) $username;
-        } else {
-            throw new \InvalidArgumentException('username invalid');
+
+            return $this;
         }
 
-        return $this;
+        throw new \InvalidArgumentException('username invalid');
     }
 
     /**
