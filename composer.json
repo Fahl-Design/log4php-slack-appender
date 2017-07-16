@@ -34,8 +34,10 @@
     }
   },
   "scripts": {
-    "test": [
-      "./vendor/bin/phpunit --config=phpunit.xml",
+    "run-tests": [
+      "./vendor/bin/phpunit --config=phpunit.xml"
+    ],
+    "cs-check": [
       "./vendor/bin/php-cs-fixer fix --dry-run -vv"
     ],
     "coverage": [
