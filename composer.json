@@ -13,7 +13,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": ">= 5.5 || ^7",
+    "php": ">= 5.5 || >=7",
     "roave/security-advisories": "dev-master",
     "apache/log4php": "^2.3",
     "maknz/slack": "1.7.*"
