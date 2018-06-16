@@ -100,6 +100,5 @@ return PhpCsFixer\Config::create()
         PhpCsFixer\Finder::create()
             ->files()
             ->in(__DIR__ . '/src')
-            ->in(__DIR__ . '/tests')
             ->name('*.php')
     );
