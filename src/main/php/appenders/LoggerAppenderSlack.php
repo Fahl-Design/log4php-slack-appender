@@ -66,9 +66,9 @@ class LoggerAppenderSlack extends LoggerAppender
      * @var string
      */
     protected $_levelName;
-    
+
     /**
-     * @var bool 
+     * @var bool
      */
     protected $_linkNames = \true;
 
@@ -88,7 +88,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_addEmoji = false;
 
     /**
-     * Get LinkNames
+     * Get LinkNames.
      *
      * @return bool
      */
@@ -98,7 +98,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set LinkNames
+     * Set LinkNames.
      *
      * @param bool $linkNames
      *
@@ -112,7 +112,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set AddEmoji
+     * Set AddEmoji.
      *
      * @param bool $addEmoji
      *
@@ -120,13 +120,13 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setAddEmoji($addEmoji)
     {
-        $this->_addEmoji = (bool) (int)  $addEmoji;
+        $this->_addEmoji = (bool) (int) $addEmoji;
 
         return $this;
     }
 
     /**
-     * Get UnfurlLinks
+     * Get UnfurlLinks.
      *
      * @return bool
      */
@@ -136,7 +136,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set UnfurlLinks
+     * Set UnfurlLinks.
      *
      * @param bool $unfurlLinks
      *
@@ -144,13 +144,13 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setUnfurlLinks($unfurlLinks)
     {
-        $this->_unfurlLinks = (bool) (int)  $unfurlLinks;
+        $this->_unfurlLinks = (bool) (int) $unfurlLinks;
 
         return $this;
     }
 
     /**
-     * Get UnfurlMedia
+     * Get UnfurlMedia.
      *
      * @return bool
      */
@@ -160,7 +160,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set UnfurlMedia
+     * Set UnfurlMedia.
      *
      * @param bool $unfurlMedia
      *
@@ -264,9 +264,9 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _initSlackClient()
     {
         $settings = [
-            'link_names' => $this->_isLinkNames(),
+            'link_names'   => $this->_isLinkNames(),
             'unfurl_media' => $this->_isUnfurlMedia(),
-            'unfurl_link' => $this->_isUnfurlMedia(),
+            'unfurl_link'  => $this->_isUnfurlMedia(),
         ];
         $slackClient = new Client($this->_getEndpoint(), $settings);
 
@@ -447,7 +447,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _generateAttachment()
     {
         $attachment = new Attachment([]);
-        $attachment->setAuthorName('Full ' . $this->getLevelName().' Message');
+        $attachment->setAuthorName('Full '.$this->getLevelName().' Message');
         $attachment->setAuthorIcon(':ghost:');
 
         if ($this->_isAllowMarkdown()) {
@@ -502,7 +502,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _getMarkdownTitleText($logMessage)
     {
         return '*'.$this->getLevelName().'* '.
-            '_( Logger: *'.$this->getName().'* )_ : _' .$logMessage .'_';
+            '_( Logger: *'.$this->getName().'* )_ : _'.$logMessage.'_';
     }
 
     /**
@@ -595,7 +595,7 @@ class LoggerAppenderSlack extends LoggerAppender
         }
 
         $message->setText(
-            $this->getLevelName().' '.$this->getName() . ' ' . $logMessage
+            $this->getLevelName().' '.$this->getName().' '.$logMessage
         );
         if ($this->_isAllowMarkdown()) {
             $message->setText($this->_getMarkdownTitleText($logMessage));
@@ -633,7 +633,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set icon By log level
+     * Set icon By log level.
      *
      * @param LoggerLoggingEvent $event
      *
@@ -667,7 +667,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Should add emoji to attachment title
+     * Should add emoji to attachment title.
      *
      * @return bool
      */
