@@ -19,7 +19,7 @@ class LoggerAppenderSlack extends LoggerAppender
     const ENDPOINT_VALIDATION_STRING = 'https://hooks.slack.com';
 
     /**
-     * @var Maknz\Slack\Client
+     * @var Maknz\Slack\Client|null
      */
     protected $_slackClient;
 
@@ -66,6 +66,112 @@ class LoggerAppenderSlack extends LoggerAppender
      * @var string
      */
     protected $_levelName;
+    
+    /**
+     * @var bool 
+     */
+    protected $_linkNames = \true;
+
+    /**
+     * @var bool
+     */
+    protected $_unfurlLinks = \false;
+
+    /**
+     * @var bool
+     */
+    protected $_unfurlMedia = \true;
+
+    /**
+     * @var bool
+     */
+    protected $_addEmoji = false;
+
+    /**
+     * Get LinkNames
+     *
+     * @return bool
+     */
+    protected function _isLinkNames()
+    {
+        return $this->_linkNames;
+    }
+
+    /**
+     * Set LinkNames
+     *
+     * @param bool $linkNames
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setLinkNames($linkNames)
+    {
+        $this->_linkNames = (bool) (int) $linkNames;
+
+        return $this;
+    }
+
+    /**
+     * Set AddEmoji
+     *
+     * @param bool $addEmoji
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setAddEmoji($addEmoji)
+    {
+        $this->_addEmoji = (bool) (int)  $addEmoji;
+
+        return $this;
+    }
+
+    /**
+     * Get UnfurlLinks
+     *
+     * @return bool
+     */
+    protected function _isUnfurlLinks()
+    {
+        return $this->_unfurlLinks;
+    }
+
+    /**
+     * Set UnfurlLinks
+     *
+     * @param bool $unfurlLinks
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setUnfurlLinks($unfurlLinks)
+    {
+        $this->_unfurlLinks = (bool) (int)  $unfurlLinks;
+
+        return $this;
+    }
+
+    /**
+     * Get UnfurlMedia
+     *
+     * @return bool
+     */
+    protected function _isUnfurlMedia()
+    {
+        return $this->_unfurlMedia;
+    }
+
+    /**
+     * Set UnfurlMedia
+     *
+     * @param bool $unfurlMedia
+     *
+     * @return LoggerAppenderSlack
+     */
+    public function setUnfurlMedia($unfurlMedia)
+    {
+        $this->_unfurlMedia = (bool) (int) $unfurlMedia;
+
+        return $this;
+    }
 
     /**
      * Get Text.
@@ -116,6 +222,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _formatEventToText(LoggerLoggingEvent $event)
     {
         $this->_text = trim($this->layout->format($event));
+        $this->_setIconByLevel($event);
         $this->_setLevelName($event->getLevel()->toString());
 
         return $this;
@@ -156,7 +263,12 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _initSlackClient()
     {
-        $slackClient = new Client($this->_getEndpoint());
+        $settings = [
+            'link_names' => $this->_isLinkNames(),
+            'unfurl_media' => $this->_isUnfurlMedia(),
+            'unfurl_link' => $this->_isUnfurlMedia(),
+        ];
+        $slackClient = new Client($this->_getEndpoint(), $settings);
 
         $this->_slackClient = $slackClient;
 
@@ -319,6 +431,9 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setAsAttachment($sendLogAsAttachment)
     {
+        if (is_string($sendLogAsAttachment) && $sendLogAsAttachment === 'false') {
+            $sendLogAsAttachment = false;
+        }
         $this->_asAttachment = (bool) $sendLogAsAttachment;
 
         return $this;
@@ -332,8 +447,11 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _generateAttachment()
     {
         $attachment = new Attachment([]);
+        $attachment->setAuthorName('Full ' . $this->getLevelName().' Message');
+        $attachment->setAuthorIcon(':ghost:');
+
         if ($this->_isAllowMarkdown()) {
-            $attachment->setMarkdownFields(['text']);
+            $attachment->setMarkdownFields(['text', 'author_name']);
         }
         // add text to attachment
         $attachment->setText($this->_getText());
@@ -377,12 +495,14 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Get Title with markdown.
      *
+     * @param string $logMessage
+     *
      * @return string
      */
-    protected function _getMarkdownTitleText()
+    protected function _getMarkdownTitleText($logMessage)
     {
         return '*'.$this->getLevelName().'* '.
-            '_( Logger: *'.$this->getName().'* )_';
+            '_( Logger: *'.$this->getName().'* )_ : _' .$logMessage .'_';
     }
 
     /**
@@ -395,20 +515,21 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _setColorByLevelName(Attachment $attachment, $levelName)
     {
-        switch ($levelName) {
-            case 'DEBUG':
+        switch (true) {
+            case strpos($levelName, 'TRACE') !== false:
+            case strpos($levelName, 'DEBUG') !== false:
                 $attachment->setColor('#BDBDBD');
                 break;
-            case 'INFO':
+            case strpos($levelName, 'INFO') !== false:
                 $attachment->setColor('#64B5F6');
                 break;
-            case 'WARN':
+            case strpos($levelName, 'WARN') !== false:
                 $attachment->setColor('#FFA726');
                 break;
-            case 'ERROR':
+            case strpos($levelName, 'ERROR') !== false:
                 $attachment->setColor('#EF6C00');
                 break;
-            case 'FATAL':
+            case strpos($levelName, 'FATAL') !== false:
                 $attachment->setColor('#D84315');
                 break;
             default:
@@ -467,9 +588,17 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _setMessageTitle(\Maknz\Slack\Message $message)
     {
-        $message->setText($this->getLevelName().' '.$this->getName());
+        $logMessage = $this->_getText();
+
+        if (\strlen($logMessage) > 150) {
+            $logMessage = \substr($logMessage, 0, 150);
+        }
+
+        $message->setText(
+            $this->getLevelName().' '.$this->getName() . ' ' . $logMessage
+        );
         if ($this->_isAllowMarkdown()) {
-            $message->setText($this->_getMarkdownTitleText());
+            $message->setText($this->_getMarkdownTitleText($logMessage));
         }
 
         return $message;
@@ -485,7 +614,7 @@ class LoggerAppenderSlack extends LoggerAppender
         // create message
         $message = new \Maknz\Slack\Message($this->_getSlackClient());
         // set username
-        $message->setUsername($this->_getUsername());
+        $message->from($this->_getUsername());
         // set icon
         $message->setIcon($this->_getIcon());
         // set channel
@@ -501,5 +630,49 @@ class LoggerAppenderSlack extends LoggerAppender
         $message = $this->_setMessageTitle($message);
 
         return $message;
+    }
+
+    /**
+     * Set icon By log level
+     *
+     * @param LoggerLoggingEvent $event
+     *
+     * @return null
+     */
+    protected function _setIconByLevel(\LoggerLoggingEvent $event)
+    {
+        if ($this->_canAddEmoji() !== true) {
+            return null;
+        }
+        $icon = '';
+        if ($event->getLevel()->toInt() === \LoggerLevel::TRACE) {
+            $icon = ':squirrel:';
+        }
+        if ($event->getLevel()->toInt() === \LoggerLevel::DEBUG) {
+            $icon = ':suspect:';
+        }
+        if ($event->getLevel()->toInt() === \LoggerLevel::INFO) {
+            $icon = ':suspect:';
+        }
+        if ($event->getLevel()->toInt() === \LoggerLevel::WARN) {
+            $icon = ':feelsgood:';
+        }
+        if ($event->getLevel()->toInt() === \LoggerLevel::ERROR) {
+            $icon = ':goberserk:';
+        }
+        if ($event->getLevel()->toInt() === \LoggerLevel::FATAL) {
+            $icon = ':rage4:';
+        }
+        $this->setIcon($icon);
+    }
+
+    /**
+     * Should add emoji to attachment title
+     *
+     * @return bool
+     */
+    protected function _canAddEmoji()
+    {
+        return $this->_addEmoji;
     }
 }
