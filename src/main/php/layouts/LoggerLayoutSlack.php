@@ -33,6 +33,6 @@ class LoggerLayoutSlack extends LoggerLayoutSimple
     {
         $message = $event->getRenderedMessage();
 
-        return "$message".PHP_EOL;
+        return "$message".\PHP_EOL;
     }
 }

@@ -118,7 +118,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
     public function testGetSlackClient()
     {
         // Arrange
-        $method = new ReflectionMethod(get_class($this->_subject), '_getSlackClient');
+        $method = new ReflectionMethod(\get_class($this->_subject), '_getSlackClient');
         $method->setAccessible(true);
         // Act
         $result = $method->invoke($this->_subject);
@@ -135,7 +135,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $appenderSlack = clone $this->_subject;
         $appenderSlack->setSlackClient($slackClientMock);
 
-        $method = new ReflectionMethod(get_class($appenderSlack), 'append');
+        $method = new ReflectionMethod(\get_class($appenderSlack), 'append');
         $method->setAccessible(true);
         // Act
         $eventError = new LoggerLoggingEvent('LoggerAppenderEchoTest', new Logger('TEST'), LoggerLevel::getLevelError(), 'testmessage');
@@ -153,7 +153,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $appenderSlack->setAllowMarkdown(false);
         $appenderSlack->setSlackClient($slackClientMock);
 
-        $method = new ReflectionMethod(get_class($appenderSlack), 'append');
+        $method = new ReflectionMethod(\get_class($appenderSlack), 'append');
         $method->setAccessible(true);
         // Act
         $eventError = new LoggerLoggingEvent('LoggerAppenderEchoTest', new Logger('TEST'), LoggerLevel::getLevelError(), 'testmessage');
@@ -163,6 +163,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider _levelAndColorProvider
+     *
      * @param mixed $loggerLevel
      * @param mixed $expectedColor
      */
@@ -175,7 +176,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $appenderSlack = clone $this->_subject;
         $appenderSlack->setSlackClient($slackClientMock);
 
-        $method = new ReflectionMethod(get_class($appenderSlack), '_setColorByLevelName');
+        $method = new ReflectionMethod(\get_class($appenderSlack), '_setColorByLevelName');
         $method->setAccessible(true);
 
         $attachment = new \Maknz\Slack\Attachment([]);
@@ -201,7 +202,6 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     *
      * @dataProvider _allowMarkdownSettingData
      */
     public function testAllowMarkdownSetting()
@@ -220,11 +220,11 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $attachments = $message->getAttachments();
 
         // Assert
-        $this->assertTrue(is_array($attachments));
+        $this->assertTrue(\is_array($attachments));
         $this->assertCount(1, $attachments);
         $this->assertArrayHasKey('0', $attachments);
         $this->assertInstanceOf(Attachment::class, $attachments[0]);
-        $this->assertTrue(is_array($attachments[0]->getFields()));
+        $this->assertTrue(\is_array($attachments[0]->getFields()));
         $this->assertCount(2, $attachments[0]->getFields());
         $this->assertSame('Logger', $attachments[0]->getFields()[0]->getTitle());
         $this->assertSame('unitTestLogger', $attachments[0]->getFields()[0]->getValue());
@@ -241,13 +241,13 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $subject = clone $this->_subject;
         $subject->setAllowMarkdown($value);
 
-        $method = new ReflectionMethod(get_class($subject), '_isAllowMarkdown');
+        $method = new ReflectionMethod(\get_class($subject), '_isAllowMarkdown');
         $method->setAccessible(true);
 
         $this->assertSame(
             $method->invoke($subject),
             $expected,
-            var_export($value, 1) .' is '. var_export($expected, 1)
+            \var_export($value, 1).' is '.\var_export($expected, 1)
         );
     }
 

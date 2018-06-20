@@ -6,7 +6,6 @@ use Maknz\Slack\Client;
 /**
  * LoggerAppenderSlack appends log events to a Slack channel.
  *
- *
  * @since      2.4.0
  *
  * @author     Benjamin Fahl <ben@webproject.xyz>
@@ -19,7 +18,7 @@ class LoggerAppenderSlack extends LoggerAppender
     const ENDPOINT_VALIDATION_STRING = 'https://hooks.slack.com';
 
     /**
-     * @var Maknz\Slack\Client|null
+     * @var null|Maknz\Slack\Client
      */
     protected $_slackClient;
 
@@ -66,9 +65,9 @@ class LoggerAppenderSlack extends LoggerAppender
      * @var string
      */
     protected $_levelName;
-    
+
     /**
-     * @var bool 
+     * @var bool
      */
     protected $_linkNames = \true;
 
@@ -120,7 +119,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setAddEmoji($addEmoji)
     {
-        $this->_addEmoji = (bool) (int)  $addEmoji;
+        $this->_addEmoji = (bool) (int) $addEmoji;
 
         return $this;
     }
@@ -144,7 +143,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setUnfurlLinks($unfurlLinks)
     {
-        $this->_unfurlLinks = (bool) (int)  $unfurlLinks;
+        $this->_unfurlLinks = (bool) (int) $unfurlLinks;
 
         return $this;
     }
@@ -221,7 +220,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     protected function _formatEventToText(LoggerLoggingEvent $event)
     {
-        $this->_text = trim($this->layout->format($event));
+        $this->_text = \trim($this->layout->format($event));
         $this->_setIconByLevel($event);
         $this->_setLevelName($event->getLevel()->toString());
 
@@ -264,9 +263,9 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _initSlackClient()
     {
         $settings = [
-            'link_names' => $this->_isLinkNames(),
+            'link_names'   => $this->_isLinkNames(),
             'unfurl_media' => $this->_isUnfurlMedia(),
-            'unfurl_link' => $this->_isUnfurlMedia(),
+            'unfurl_link'  => $this->_isUnfurlMedia(),
         ];
         $slackClient = new Client($this->_getEndpoint(), $settings);
 
@@ -296,8 +295,8 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setEndpoint($endpoint)
     {
-        if (true === is_string($endpoint)
-            && 0 === strpos($endpoint, self::ENDPOINT_VALIDATION_STRING)
+        if (true === \is_string($endpoint)
+            && 0 === \strpos($endpoint, self::ENDPOINT_VALIDATION_STRING)
         ) {
             $this->_endpoint = $endpoint;
 
@@ -328,7 +327,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setUsername($username)
     {
-        if (!empty($username) && is_string($username)) {
+        if (!empty($username) && \is_string($username)) {
             $this->_username = (string) $username;
 
             return $this;
@@ -404,7 +403,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setAllowMarkdown($allowMarkdown)
     {
-        if (is_string($allowMarkdown) && $allowMarkdown === 'false') {
+        if (\is_string($allowMarkdown) && 'false' === $allowMarkdown) {
             $allowMarkdown = false;
         }
         $this->_allowMarkdown = (bool) $allowMarkdown;
@@ -431,7 +430,7 @@ class LoggerAppenderSlack extends LoggerAppender
      */
     public function setAsAttachment($sendLogAsAttachment)
     {
-        if (is_string($sendLogAsAttachment) && $sendLogAsAttachment === 'false') {
+        if (\is_string($sendLogAsAttachment) && 'false' === $sendLogAsAttachment) {
             $sendLogAsAttachment = false;
         }
         $this->_asAttachment = (bool) $sendLogAsAttachment;
@@ -447,7 +446,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _generateAttachment()
     {
         $attachment = new Attachment([]);
-        $attachment->setAuthorName('Full ' . $this->getLevelName().' Message');
+        $attachment->setAuthorName('Full '.$this->getLevelName().' Message');
         $attachment->setAuthorIcon(':ghost:');
 
         if ($this->_isAllowMarkdown()) {
@@ -463,9 +462,7 @@ class LoggerAppenderSlack extends LoggerAppender
         // inject field of logger name
         $attachment = $this->_addFieldLoggerName($attachment);
         // inject field of date
-        $attachment = $this->_addFieldDate($attachment);
-
-        return $attachment;
+        return $this->_addFieldDate($attachment);
     }
 
     /**
@@ -502,7 +499,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _getMarkdownTitleText($logMessage)
     {
         return '*'.$this->getLevelName().'* '.
-            '_( Logger: *'.$this->getName().'* )_ : _' .$logMessage .'_';
+            '_( Logger: *'.$this->getName().'* )_ : _'.$logMessage.'_';
     }
 
     /**
@@ -516,21 +513,26 @@ class LoggerAppenderSlack extends LoggerAppender
     protected function _setColorByLevelName(Attachment $attachment, $levelName)
     {
         switch (true) {
-            case strpos($levelName, 'TRACE') !== false:
-            case strpos($levelName, 'DEBUG') !== false:
+            case false !== \strpos($levelName, 'TRACE'):
+            case false !== \strpos($levelName, 'DEBUG'):
                 $attachment->setColor('#BDBDBD');
+
                 break;
-            case strpos($levelName, 'INFO') !== false:
+            case false !== \strpos($levelName, 'INFO'):
                 $attachment->setColor('#64B5F6');
+
                 break;
-            case strpos($levelName, 'WARN') !== false:
+            case false !== \strpos($levelName, 'WARN'):
                 $attachment->setColor('#FFA726');
+
                 break;
-            case strpos($levelName, 'ERROR') !== false:
+            case false !== \strpos($levelName, 'ERROR'):
                 $attachment->setColor('#EF6C00');
+
                 break;
-            case strpos($levelName, 'FATAL') !== false:
+            case false !== \strpos($levelName, 'FATAL'):
                 $attachment->setColor('#D84315');
+
                 break;
             default:
                 $attachment->setColor('good');
@@ -586,7 +588,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return \Maknz\Slack\Message
      */
-    protected function _setMessageTitle(\Maknz\Slack\Message $message)
+    protected function _setMessageTitle(Maknz\Slack\Message $message)
     {
         $logMessage = $this->_getText();
 
@@ -595,7 +597,7 @@ class LoggerAppenderSlack extends LoggerAppender
         }
 
         $message->setText(
-            $this->getLevelName().' '.$this->getName() . ' ' . $logMessage
+            $this->getLevelName().' '.$this->getName().' '.$logMessage
         );
         if ($this->_isAllowMarkdown()) {
             $message->setText($this->_getMarkdownTitleText($logMessage));
@@ -627,40 +629,36 @@ class LoggerAppenderSlack extends LoggerAppender
             $message->attach($this->_generateAttachment());
         }
         // set name of logger as text
-        $message = $this->_setMessageTitle($message);
-
-        return $message;
+        return $this->_setMessageTitle($message);
     }
 
     /**
      * Set icon By log level
      *
      * @param LoggerLoggingEvent $event
-     *
-     * @return null
      */
-    protected function _setIconByLevel(\LoggerLoggingEvent $event)
+    protected function _setIconByLevel(LoggerLoggingEvent $event)
     {
-        if ($this->_canAddEmoji() !== true) {
+        if (true !== $this->_canAddEmoji()) {
             return null;
         }
         $icon = '';
-        if ($event->getLevel()->toInt() === \LoggerLevel::TRACE) {
+        if (\LoggerLevel::TRACE === $event->getLevel()->toInt()) {
             $icon = ':squirrel:';
         }
-        if ($event->getLevel()->toInt() === \LoggerLevel::DEBUG) {
+        if (\LoggerLevel::DEBUG === $event->getLevel()->toInt()) {
             $icon = ':suspect:';
         }
-        if ($event->getLevel()->toInt() === \LoggerLevel::INFO) {
+        if (\LoggerLevel::INFO === $event->getLevel()->toInt()) {
             $icon = ':suspect:';
         }
-        if ($event->getLevel()->toInt() === \LoggerLevel::WARN) {
+        if (\LoggerLevel::WARN === $event->getLevel()->toInt()) {
             $icon = ':feelsgood:';
         }
-        if ($event->getLevel()->toInt() === \LoggerLevel::ERROR) {
+        if (\LoggerLevel::ERROR === $event->getLevel()->toInt()) {
             $icon = ':goberserk:';
         }
-        if ($event->getLevel()->toInt() === \LoggerLevel::FATAL) {
+        if (\LoggerLevel::FATAL === $event->getLevel()->toInt()) {
             $icon = ':rage4:';
         }
         $this->setIcon($icon);
