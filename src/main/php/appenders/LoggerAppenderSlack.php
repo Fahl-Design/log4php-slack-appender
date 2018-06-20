@@ -87,7 +87,7 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_addEmoji = false;
 
     /**
-     * Get LinkNames
+     * Get LinkNames.
      *
      * @return bool
      */
@@ -97,7 +97,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set LinkNames
+     * Set LinkNames.
      *
      * @param bool $linkNames
      *
@@ -111,7 +111,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set AddEmoji
+     * Set AddEmoji.
      *
      * @param bool $addEmoji
      *
@@ -125,7 +125,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get UnfurlLinks
+     * Get UnfurlLinks.
      *
      * @return bool
      */
@@ -135,7 +135,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set UnfurlLinks
+     * Set UnfurlLinks.
      *
      * @param bool $unfurlLinks
      *
@@ -149,7 +149,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Get UnfurlMedia
+     * Get UnfurlMedia.
      *
      * @return bool
      */
@@ -159,7 +159,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set UnfurlMedia
+     * Set UnfurlMedia.
      *
      * @param bool $unfurlMedia
      *
@@ -633,7 +633,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Set icon By log level
+     * Set icon By log level.
      *
      * @param LoggerLoggingEvent $event
      */
@@ -665,7 +665,7 @@ class LoggerAppenderSlack extends LoggerAppender
     }
 
     /**
-     * Should add emoji to attachment title
+     * Should add emoji to attachment title.
      *
      * @return bool
      */
