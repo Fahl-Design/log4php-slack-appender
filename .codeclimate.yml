@@ -63,12 +63,11 @@ plugins:
 exclude_patterns:
   - .git/**/*
   - vendor/**/*
-  - test/**/*
+  - tests/**/*
   - wiki/**/*
 ratings:
   paths:
-    - src/main/php/**
+    - src/**
     - "**.php"
 exclude_paths:
-  - "**Test.php"
-  - "**/bootstrap.php"
+  - "tests/**.php"

@@ -79,3 +79,11 @@ coverage/*
 !coverage/.gitkeep
 composer.lock
 /src/examples/resources/appender_slack.local.xml
+/tests/_support/_generated/
+!/build/logs/.gitkeep
+/build/logs/
+!/build/coverage/.gitkeep
+/build/coverage/
+
+*.local.php
+*.local.xml

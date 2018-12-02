@@ -17,17 +17,28 @@
   "require": {
     "php": "^7.1",
     "apache/log4php": "^2.3",
-    "maknz/slack": "1.7.*"
+    "alek13/slack": "^1"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
     "codeception/codeception": "2.*",
+    "codeception/mockery-module": "0.*",
     "mockery/mockery": "1.*",
     "friendsofphp/php-cs-fixer": "2.*",
-    "codeclimate/php-test-reporter": "^0.4"
+    "codeclimate/php-test-reporter": "^0.4",
+    "monolog/monolog": "1.*",
+    "symfony/var-dumper": "4.*"
   },
   "autoload": {
-    "classmap": ["src/main/php/"]
+    "psr-4": {
+        "WebProject\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WebProject\\Tests\\Helper\\": "tests/_support",
+      "WebProject\\Tests\\Unit\\": "tests/Unit"
+    }
   },
   "extra": {
     "branch-alias": {
