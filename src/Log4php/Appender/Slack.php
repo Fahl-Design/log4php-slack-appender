@@ -1,31 +1,45 @@
 <?php
+declare(strict_types=1);
 
+namespace WebProject\Log4php\Appender;
+
+use LoggerAppender;
+use LoggerLoggingEvent;
 use Maknz\Slack\Attachment;
 use Maknz\Slack\Client;
 
 /**
- * LoggerAppenderSlack appends log events to a Slack channel.
+ * Slack appends log events to a Slack channel.
  *
  * @since      2.4.0
  *
  * @author     Benjamin Fahl <ben@webproject.xyz>
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, v2.0
  *
- * @link       http://logging.apache.org/log4php
+ * @link http://logging.apache.org/log4php
  */
-class LoggerAppenderSlack extends LoggerAppender
+class Slack extends LoggerAppender
 {
-    const ENDPOINT_VALIDATION_STRING = 'https://hooks.slack.com';
+    public const ENDPOINT_VALIDATION_STRING = 'https://hooks.slack.com';
+    public const COLOR_DEBUG = '#BDBDBD';
+    public const COLOR_INFO = '#64B5F6';
+    public const COLOR_WARN = '#FFA726';
+    public const COLOR_ERROR = '#EF6C00';
+    public const COLOR_FATAL = '#D84315';
+    public const COLOR_DEFAULT = 'good';
+
+    // todo: config array and const.
+    // todo: cleanup
 
     /**
-     * @var null|Maknz\Slack\Client
+     * @var \Maknz\Slack\Client
      */
     protected $_slackClient;
 
     /**
      * @var string
      */
-    protected $_username;
+    protected $_username = 'log4php';
 
     /**
      * Endpoint (slack hook url 'https://hooks.slack.com/...').
@@ -42,7 +56,7 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * @var string
      */
-    protected $_icon;
+    protected $_icon = ':ghost:';
 
     /**
      * @var string
@@ -87,11 +101,21 @@ class LoggerAppenderSlack extends LoggerAppender
     protected $_addEmoji = false;
 
     /**
+     * Should add emoji to attachment title.
+     *
+     * @return bool
+     */
+    protected function _canAddEmoji(): bool
+    {
+        return $this->_addEmoji;
+    }
+
+    /**
      * Get LinkNames.
      *
      * @return bool
      */
-    protected function _isLinkNames()
+    protected function _isLinkNames(): bool
     {
         return $this->_linkNames;
     }
@@ -101,9 +125,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param bool $linkNames
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setLinkNames($linkNames)
+    public function setLinkNames($linkNames): self
     {
         $this->_linkNames = (bool) (int) $linkNames;
 
@@ -115,9 +139,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param bool $addEmoji
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setAddEmoji($addEmoji)
+    public function setAddEmoji($addEmoji): self
     {
         $this->_addEmoji = (bool) (int) $addEmoji;
 
@@ -129,7 +153,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return bool
      */
-    protected function _isUnfurlLinks()
+    protected function _isUnfurlLinks(): bool
     {
         return $this->_unfurlLinks;
     }
@@ -139,9 +163,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param bool $unfurlLinks
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setUnfurlLinks($unfurlLinks)
+    public function setUnfurlLinks($unfurlLinks): self
     {
         $this->_unfurlLinks = (bool) (int) $unfurlLinks;
 
@@ -153,7 +177,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return bool
      */
-    protected function _isUnfurlMedia()
+    protected function _isUnfurlMedia(): bool
     {
         return $this->_unfurlMedia;
     }
@@ -163,9 +187,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param bool $unfurlMedia
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setUnfurlMedia($unfurlMedia)
+    public function setUnfurlMedia($unfurlMedia): self
     {
         $this->_unfurlMedia = (bool) (int) $unfurlMedia;
 
@@ -177,19 +201,19 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return string
      */
-    protected function _getText()
+    protected function _getText(): string
     {
-        return $this->_text;
+        return $this->_text ?? '';
     }
 
     /**
      * Overwrite layout with LoggerLayoutSlack.
      *
-     * @return LoggerLayoutSlack
+     * @return \WebProject\Log4php\Layouts\Slack
      */
     public function getDefaultLayout()
     {
-        return new LoggerLayoutSlack();
+        return new \WebProject\Log4php\Layouts\Slack();
     }
 
     /**
@@ -198,17 +222,27 @@ class LoggerAppenderSlack extends LoggerAppender
      * Derived appenders should implement this method to perform actual logging.
      *
      * @param LoggerLoggingEvent $event
+     *
+     * @return bool
      */
     protected function append(LoggerLoggingEvent $event)
     {
-        // format text with layout
-        $this->_formatEventToText($event);
-        // get slack client
-        $this->_getSlackClient();
-        // generate message
-        $message = $this->generateMessage();
-        // send message
-        $message->send();
+        try {
+            // format text with layout
+            $this->_formatEventToText($event);
+            // get slack client
+            $this->_getSlackClient();
+            // generate message
+            $message = $this->generateMessage();
+            // send message
+            $message->send();
+
+            return true;
+        } catch (\Throwable $e) {
+            dump($e);
+
+            return false;
+        }
     }
 
     /**
@@ -218,7 +252,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return $this
      */
-    protected function _formatEventToText(LoggerLoggingEvent $event)
+    protected function _formatEventToText(LoggerLoggingEvent $event): self
     {
         $this->_text = \trim($this->layout->format($event));
         $this->_setIconByLevel($event);
@@ -230,9 +264,9 @@ class LoggerAppenderSlack extends LoggerAppender
     /**
      * Get SlackClient.
      *
-     * @return Maknz\Slack\Client
+     * @return \Maknz\Slack\Client
      */
-    protected function _getSlackClient()
+    protected function _getSlackClient(): Client
     {
         if (null === $this->_slackClient) {
             $this->_initSlackClient();
@@ -246,9 +280,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param Client $client
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setSlackClient(Client $client = null)
+    public function setSlackClient(Client $client): self
     {
         $this->_slackClient = $client;
 
@@ -260,7 +294,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return $this
      */
-    protected function _initSlackClient()
+    protected function _initSlackClient(): self
     {
         $settings = [
             'link_names'   => $this->_isLinkNames(),
@@ -279,7 +313,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return string
      */
-    protected function _getEndpoint()
+    protected function _getEndpoint(): string
     {
         return $this->_endpoint;
     }
@@ -291,9 +325,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @throws \InvalidArgumentException
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setEndpoint($endpoint)
+    public function setEndpoint($endpoint): self
     {
         if (true === \is_string($endpoint)
             && 0 === \strpos($endpoint, self::ENDPOINT_VALIDATION_STRING)
@@ -311,7 +345,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return string
      */
-    protected function _getUsername()
+    protected function _getUsername(): string
     {
         return $this->_username;
     }
@@ -325,7 +359,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return $this
      */
-    public function setUsername($username)
+    public function setUsername($username): self
     {
         if (!empty($username) && \is_string($username)) {
             $this->_username = (string) $username;
@@ -341,7 +375,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return string
      */
-    protected function _getIcon()
+    protected function _getIcon(): string
     {
         return $this->_icon;
     }
@@ -351,9 +385,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param string $icon
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setIcon($icon)
+    public function setIcon($icon): self
     {
         $this->_icon = $icon;
 
@@ -365,7 +399,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return string
      */
-    protected function _getChannel()
+    protected function _getChannel(): string
     {
         return $this->_channel;
     }
@@ -375,9 +409,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param string $channel
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setChannel($channel)
+    public function setChannel($channel): self
     {
         $this->_channel = $channel;
 
@@ -389,9 +423,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return bool
      */
-    protected function _isAllowMarkdown()
+    protected function _isAllowMarkdown(): bool
     {
-        return (bool) $this->_allowMarkdown;
+        return $this->_allowMarkdown;
     }
 
     /**
@@ -399,9 +433,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param bool|string $allowMarkdown
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setAllowMarkdown($allowMarkdown)
+    public function setAllowMarkdown($allowMarkdown): self
     {
         if (\is_string($allowMarkdown) && 'false' === $allowMarkdown) {
             $allowMarkdown = false;
@@ -416,21 +450,21 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return bool
      */
-    protected function _sendLogAsAttachment()
+    protected function _sendLogAsAttachment(): bool
     {
-        return (bool) $this->_asAttachment;
+        return $this->_asAttachment;
     }
 
     /**
      * Set SendLogAsAttachment.
      *
-     * @param bool $sendLogAsAttachment
+     * @param bool|string $sendLogAsAttachment
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    public function setAsAttachment($sendLogAsAttachment)
+    public function setAsAttachment($sendLogAsAttachment): self
     {
-        if (\is_string($sendLogAsAttachment) && 'false' === $sendLogAsAttachment) {
+        if ('false' === $sendLogAsAttachment) {
             $sendLogAsAttachment = false;
         }
         $this->_asAttachment = (bool) $sendLogAsAttachment;
@@ -443,7 +477,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return Attachment
      */
-    protected function _generateAttachment()
+    protected function _generateAttachment(): Attachment
     {
         $attachment = new Attachment([]);
         $attachment->setAuthorName('Full '.$this->getLevelName().' Message');
@@ -470,9 +504,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return string
      */
-    public function getLevelName()
+    public function getLevelName(): string
     {
-        return $this->_levelName;
+        return $this->_levelName ?? '';
     }
 
     /**
@@ -480,9 +514,9 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param string $levelName
      *
-     * @return LoggerAppenderSlack
+     * @return Slack
      */
-    protected function _setLevelName($levelName)
+    protected function _setLevelName($levelName): self
     {
         $this->_levelName = $levelName;
 
@@ -496,10 +530,10 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return string
      */
-    protected function _getMarkdownTitleText($logMessage)
+    protected function _getMarkdownTitleText($logMessage): string
     {
         return '*'.$this->getLevelName().'* '.
-            '_( Logger: *'.$this->getName().'* )_ : _'.$logMessage.'_';
+     '_( Logger: *'.$this->getName().'* )_ : _'.$logMessage.'_';
     }
 
     /**
@@ -510,32 +544,32 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return Attachment
      */
-    protected function _setColorByLevelName(Attachment $attachment, $levelName)
+    protected function _setColorByLevelName(Attachment $attachment, $levelName): Attachment
     {
         switch (true) {
             case false !== \strpos($levelName, 'TRACE'):
             case false !== \strpos($levelName, 'DEBUG'):
-                $attachment->setColor('#BDBDBD');
+                $attachment->setColor(self::COLOR_DEBUG);
 
                 break;
             case false !== \strpos($levelName, 'INFO'):
-                $attachment->setColor('#64B5F6');
+                $attachment->setColor(self::COLOR_INFO);
 
                 break;
             case false !== \strpos($levelName, 'WARN'):
-                $attachment->setColor('#FFA726');
+                $attachment->setColor(self::COLOR_WARN);
 
                 break;
             case false !== \strpos($levelName, 'ERROR'):
-                $attachment->setColor('#EF6C00');
+                $attachment->setColor(self::COLOR_ERROR);
 
                 break;
             case false !== \strpos($levelName, 'FATAL'):
-                $attachment->setColor('#D84315');
+                $attachment->setColor(self::COLOR_FATAL);
 
                 break;
             default:
-                $attachment->setColor('good');
+                $attachment->setColor(self::COLOR_DEFAULT);
         }
 
         return $attachment;
@@ -548,13 +582,13 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return Attachment
      */
-    protected function _addFieldLoggerName(Attachment $attachment)
+    protected function _addFieldLoggerName(Attachment $attachment): Attachment
     {
         $loggerField = new \Maknz\Slack\AttachmentField([]);
         $loggerField
             ->setTitle('Logger')
             ->setValue($this->getName())
-            ->setShort(\true);
+            ->setShort('1');
 
         $attachment->addField($loggerField);
 
@@ -566,15 +600,17 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @param Attachment $attachment
      *
+     * @throws \Exception
+     *
      * @return Attachment
      */
-    protected function _addFieldDate(Attachment $attachment)
+    protected function _addFieldDate(Attachment $attachment): Attachment
     {
         $dateField = new \Maknz\Slack\AttachmentField([]);
         $dateField
             ->setTitle('Date')
             ->setValue((new \DateTime())->format('Y-m-d H:i:s'))
-            ->setShort(\true);
+            ->setShort('1');
 
         $attachment->addField($dateField);
 
@@ -588,7 +624,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return \Maknz\Slack\Message
      */
-    protected function _setMessageTitle(Maknz\Slack\Message $message)
+    protected function _setMessageTitle(\Maknz\Slack\Message $message): \Maknz\Slack\Message
     {
         $logMessage = $this->_getText();
 
@@ -611,7 +647,7 @@ class LoggerAppenderSlack extends LoggerAppender
      *
      * @return \Maknz\Slack\Message
      */
-    public function generateMessage()
+    public function generateMessage(): \Maknz\Slack\Message
     {
         // create message
         $message = new \Maknz\Slack\Message($this->_getSlackClient());
@@ -636,11 +672,13 @@ class LoggerAppenderSlack extends LoggerAppender
      * Set icon By log level.
      *
      * @param LoggerLoggingEvent $event
+     *
+     * @return Slack
      */
-    protected function _setIconByLevel(LoggerLoggingEvent $event)
+    protected function _setIconByLevel(LoggerLoggingEvent $event): self
     {
         if (true !== $this->_canAddEmoji()) {
-            return null;
+            return $this;
         }
         $icon = '';
         if (\LoggerLevel::TRACE === $event->getLevel()->toInt()) {
@@ -662,15 +700,7 @@ class LoggerAppenderSlack extends LoggerAppender
             $icon = ':rage4:';
         }
         $this->setIcon($icon);
-    }
 
-    /**
-     * Should add emoji to attachment title.
-     *
-     * @return bool
-     */
-    protected function _canAddEmoji()
-    {
-        return $this->_addEmoji;
+        return $this;
     }
 }

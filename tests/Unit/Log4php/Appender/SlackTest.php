@@ -1,28 +1,45 @@
 <?php
+declare(strict_types=1);
+
+namespace WebProject\Tests\Unit\Log4php\Appender;
+
+use InvalidArgumentException;
+use Logger;
+use LoggerLevel;
+use LoggerLoggingEvent;
 use Maknz\Slack\Attachment;
+use Mockery;
+use ReflectionMethod;
+use WebProject\Log4php\Appender\Slack;
 
 /**
- * Class LoggerAppenderSlackTest.
+ * Class SlackTest.
  */
-class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
+class SlackTest extends \Codeception\Test\Unit
 {
     /**
-     * @var LoggerAppenderSlack
+     * @var Slack
      */
     protected $_subject;
 
-    protected function setUp()
+    public function _before()
     {
-        parent::setUp();
+        $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
+        $slackClientMock->shouldReceive('sendMessage')->zeroOrMoreTimes()->andReturn(true);
 
-        $this->_subject = new LoggerAppenderSlack();
+        $appender = new Slack();
+        $appender->setSlackClient($slackClientMock);
+        $appender->setChannel('#test');
+        $appender->setEndpoint(Slack::ENDPOINT_VALIDATION_STRING);
+
+        $this->_subject = $appender;
     }
 
-    public function testSetupAppenderAndCheckSettings()
+    public function testSetupAppenderAndCheckSettings(): void
     {
         // Arrange
         $appenderSlack = clone $this->_subject;
-        $validEndpoint = LoggerAppenderSlack::ENDPOINT_VALIDATION_STRING;
+        $validEndpoint = Slack::ENDPOINT_VALIDATION_STRING;
         $appenderSlack
             ->setUsername('unitTester')
             ->setChannel('#phpunit')
@@ -31,12 +48,12 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
             ->setAsAttachment(true)
             ->setEndpoint($validEndpoint);
         // Act
-        $username = self::getObjectAttribute($appenderSlack, '_username');
-        $channel = self::getObjectAttribute($appenderSlack, '_channel');
-        $icon = self::getObjectAttribute($appenderSlack, '_icon');
-        $endpoint = self::getObjectAttribute($appenderSlack, '_endpoint');
-        $allowMarkdown = self::getObjectAttribute($appenderSlack, '_allowMarkdown');
-        $logAsAttachment = self::getObjectAttribute($appenderSlack, '_asAttachment');
+        $username = $this->getObjectAttribute($appenderSlack, '_username');
+        $channel = $this->getObjectAttribute($appenderSlack, '_channel');
+        $icon = $this->getObjectAttribute($appenderSlack, '_icon');
+        $endpoint = $this->getObjectAttribute($appenderSlack, '_endpoint');
+        $allowMarkdown = $this->getObjectAttribute($appenderSlack, '_allowMarkdown');
+        $logAsAttachment = $this->getObjectAttribute($appenderSlack, '_asAttachment');
         // Assert
         $this->assertSame('unitTester', $username, 'username value not correct');
         $this->assertSame('#phpunit', $channel, 'channel value not correct');
@@ -50,7 +67,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage invalid endpoint
      */
-    public function testSetupAppenderInvalidEndpointUrlWasPassed()
+    public function testSetupAppenderInvalidEndpointUrlWasPassed(): void
     {
         // Arrange
         $appenderSlack = clone $this->_subject;
@@ -69,7 +86,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
      *
      * @param $username
      */
-    public function testSetupAppenderInvalidUsernameValue($username)
+    public function testSetupAppenderInvalidUsernameValue($username): void
     {
         // Arrange
         $appenderSlack = clone $this->_subject;
@@ -80,7 +97,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         // error
     }
 
-    public function _usernameData()
+    public function _usernameData(): array
     {
         return [
             [''],
@@ -92,22 +109,22 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testGetSlackClientFromAppender()
+    public function testGetSlackClientFromAppender(): void
     {
         // Arrange
         $appenderSlack = clone $this->_subject;
 
-        $validEndpoint = LoggerAppenderSlack::ENDPOINT_VALIDATION_STRING;
+        $validEndpoint = Slack::ENDPOINT_VALIDATION_STRING;
         $appenderSlack
             ->setUsername('unitTester')
             ->setChannel('#phpunit')
             ->setIcon(':testing:')
             ->setEndpoint($validEndpoint);
         // Act
-        $username = self::getObjectAttribute($appenderSlack, '_username');
-        $channel = self::getObjectAttribute($appenderSlack, '_channel');
-        $icon = self::getObjectAttribute($appenderSlack, '_icon');
-        $endpoint = self::getObjectAttribute($appenderSlack, '_endpoint');
+        $username = $this->getObjectAttribute($appenderSlack, '_username');
+        $channel = $this->getObjectAttribute($appenderSlack, '_channel');
+        $icon = $this->getObjectAttribute($appenderSlack, '_icon');
+        $endpoint = $this->getObjectAttribute($appenderSlack, '_endpoint');
         // Assert
         $this->assertSame('unitTester', $username, 'username value not correct');
         $this->assertSame('#phpunit', $channel, 'channel value not correct');
@@ -115,9 +132,10 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $this->assertSame($validEndpoint, $endpoint, 'endpoint value not correct');
     }
 
-    public function testGetSlackClient()
+    public function testGetSlackClient(): void
     {
         // Arrange
+        $this->_subject->setEndpoint(Slack::ENDPOINT_VALIDATION_STRING);
         $method = new ReflectionMethod(\get_class($this->_subject), '_getSlackClient');
         $method->setAccessible(true);
         // Act
@@ -126,39 +144,35 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(\Maknz\Slack\Client::class, $result);
     }
 
-    public function testAppendFunction()
+    public function testAppendFunction(): void
     {
         // Arrange
-        $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
-        $slackClientMock->shouldReceive('sendMessage')->andReturn(true);
-
         $appenderSlack = clone $this->_subject;
-        $appenderSlack->setSlackClient($slackClientMock);
+        $appenderSlack->setChannel('#test');
 
-        $method = new ReflectionMethod(\get_class($appenderSlack), 'append');
+        $method = new ReflectionMethod(\get_class($this->_subject), 'append');
         $method->setAccessible(true);
         // Act
-        $eventError = new LoggerLoggingEvent('LoggerAppenderEchoTest', new Logger('TEST'), LoggerLevel::getLevelError(), 'testmessage');
-        $method->invoke($appenderSlack, $eventError);
+        $eventError = new LoggerLoggingEvent('EchoTest', new Logger('TEST'), LoggerLevel::getLevelError(), 'testmessage');
         // Assert
+        $result = $method->invoke($this->_subject, $eventError);
+        $this->assertTrue($result);
     }
 
-    public function testAppendFunctionNoMarkup()
+    public function testAppendFunctionNoMarkup(): void
     {
         // Arrange
-        $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
-        $slackClientMock->shouldReceive('sendMessage')->andReturn(true);
-
         $appenderSlack = clone $this->_subject;
         $appenderSlack->setAllowMarkdown(false);
-        $appenderSlack->setSlackClient($slackClientMock);
+        $appenderSlack->setChannel('#test');
 
-        $method = new ReflectionMethod(\get_class($appenderSlack), 'append');
+        $method = new ReflectionMethod(\get_class($this->_subject), 'append');
         $method->setAccessible(true);
         // Act
-        $eventError = new LoggerLoggingEvent('LoggerAppenderEchoTest', new Logger('TEST'), LoggerLevel::getLevelError(), 'testmessage');
-        $method->invoke($appenderSlack, $eventError);
+        $eventError = new LoggerLoggingEvent('EchoTest', new Logger('TEST'), LoggerLevel::getLevelError(), 'testmessage');
         // Assert
+        $result = $method->invoke($this->_subject, $eventError);
+        $this->assertTrue($result);
     }
 
     /**
@@ -167,7 +181,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
      * @param mixed $loggerLevel
      * @param mixed $expectedColor
      */
-    public function testSetColorByLevelName($loggerLevel, $expectedColor)
+    public function testSetColorByLevelName($loggerLevel, $expectedColor): void
     {
         // Arrange
         $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
@@ -189,7 +203,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function _levelAndColorProvider()
+    public function _levelAndColorProvider(): array
     {
         return [
             ['DEBUG', '#BDBDBD'],
@@ -204,7 +218,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider _allowMarkdownSettingData
      */
-    public function testAllowMarkdownSetting()
+    public function testAllowMarkdownSetting(): void
     {
         // Arrange
         $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
@@ -214,6 +228,7 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $appenderSlack->setName('unitTestLogger');
         $appenderSlack->setAllowMarkdown(true);
         $appenderSlack->setSlackClient($slackClientMock);
+        $appenderSlack->setChannel('test');
 
         // Act
         $message = $appenderSlack->generateMessage();
@@ -234,9 +249,12 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
     /**
      * @param $value
      * @param $expected
+     *
      * @dataProvider _allowMarkdownSettingData
+     *
+     * @throws \ReflectionException
      */
-    public function testMarkdownSettingValues($value, $expected)
+    public function testMarkdownSettingValues($value, $expected): void
     {
         $subject = clone $this->_subject;
         $subject->setAllowMarkdown($value);
@@ -247,14 +265,14 @@ class LoggerAppenderSlackTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             $method->invoke($subject),
             $expected,
-            \var_export($value, 1).' is '.\var_export($expected, 1)
+            \var_export($value, true).' is '.\var_export($expected, true)
         );
     }
 
     /**
      * @return array
      */
-    public function _allowMarkdownSettingData()
+    public function _allowMarkdownSettingData(): array
     {
         return [
             ['', false],

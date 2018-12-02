@@ -1,4 +1,10 @@
 <?php
+declare(strict_types=1);
+
+namespace WebProject\Log4php\Layouts;
+
+use LoggerLayoutSimple;
+use LoggerLoggingEvent;
 
 /**
  * A simple slack layout.
@@ -18,7 +24,7 @@
  *
  * @version    $Revision$
  */
-class LoggerLayoutSlack extends LoggerLayoutSimple
+class Slack extends LoggerLayoutSimple
 {
     /**
      * Returns the log statement in a format consisting of the
@@ -29,7 +35,7 @@ class LoggerLayoutSlack extends LoggerLayoutSimple
      *
      * @return string
      */
-    public function format(LoggerLoggingEvent $event)
+    public function format(LoggerLoggingEvent $event): string
     {
         $message = $event->getRenderedMessage();
 

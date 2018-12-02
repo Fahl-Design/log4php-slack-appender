@@ -14,7 +14,7 @@
  limitations under the License.
 -->
 <log4php:configuration xmlns:log4php="http://logging.apache.org/log4php/" threshold="all">
-    <appender name="default" class="LoggerAppenderSlack">
+    <appender name="default" class="\WebProject\Log4php\Appender\Slack">
         <!-- get endpoint url from https://my.slack.com/services/new/incoming-webhook -->
         <param name="endpoint" value="https://hooks.slack.com/services/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX" />
         <!-- Settings -->
