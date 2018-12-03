@@ -240,8 +240,6 @@ class Slack extends LoggerAppender
 
             return true;
         } catch (\Throwable $e) {
-            dump($e);
-
             return false;
         }
     }
@@ -256,7 +254,9 @@ class Slack extends LoggerAppender
     protected function _formatEventToText(LoggerLoggingEvent $event): self
     {
         $this->_text = \trim($this->layout->format($event));
-        $this->_setIconByLevel($event);
+        if ($this->_canAddEmoji()) {
+            $this->_setIconByLevel($event);
+        }
         $this->_setLevelName($event->getLevel()->toString());
 
         return $this;
@@ -545,8 +545,9 @@ class Slack extends LoggerAppender
      *
      * @return Attachment
      */
-    protected function _setColorByLevelName(Attachment $attachment, $levelName): Attachment
-    {
+    protected function _setColorByLevelName(
+        Attachment $attachment, $levelName
+    ): Attachment {
         switch (true) {
             case false !== \strpos($levelName, 'TRACE'):
             case false !== \strpos($levelName, 'DEBUG'):
@@ -625,8 +626,9 @@ class Slack extends LoggerAppender
      *
      * @return \Maknz\Slack\Message
      */
-    protected function _setMessageTitle(\Maknz\Slack\Message $message): \Maknz\Slack\Message
-    {
+    protected function _setMessageTitle(
+        \Maknz\Slack\Message $message
+    ): \Maknz\Slack\Message {
         $logMessage = $this->_getText();
 
         if (\strlen($logMessage) > 150) {
@@ -678,28 +680,23 @@ class Slack extends LoggerAppender
      */
     protected function _setIconByLevel(LoggerLoggingEvent $event): self
     {
-        if (true !== $this->_canAddEmoji()) {
-            return $this;
+        switch ($event->getLevel()->toInt()) {
+            case \LoggerLevel::WARN:
+                $icon = ':feelsgood:';
+
+                break;
+            case \LoggerLevel::ERROR:
+                $icon = ':goberserk:';
+
+                break;
+            case \LoggerLevel::FATAL:
+                $icon = ':rage4:';
+
+                break;
+            default:
+                $icon = ':squirrel:';
         }
-        $icon = '';
-        if (\LoggerLevel::TRACE === $event->getLevel()->toInt()) {
-            $icon = ':squirrel:';
-        }
-        if (\LoggerLevel::DEBUG === $event->getLevel()->toInt()) {
-            $icon = ':suspect:';
-        }
-        if (\LoggerLevel::INFO === $event->getLevel()->toInt()) {
-            $icon = ':suspect:';
-        }
-        if (\LoggerLevel::WARN === $event->getLevel()->toInt()) {
-            $icon = ':feelsgood:';
-        }
-        if (\LoggerLevel::ERROR === $event->getLevel()->toInt()) {
-            $icon = ':goberserk:';
-        }
-        if (\LoggerLevel::FATAL === $event->getLevel()->toInt()) {
-            $icon = ':rage4:';
-        }
+
         $this->setIcon($icon);
 
         return $this;
