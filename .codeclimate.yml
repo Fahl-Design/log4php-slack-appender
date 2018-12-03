@@ -61,8 +61,7 @@ plugins:
     enabled: true
 
 exclude_paths:
-  - "tests/**.php"
   - .git/**/*
   - vendor/**/*
   - tests/**/*
-  - wiki/**/*
+  - examples/**/*
