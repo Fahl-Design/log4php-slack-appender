@@ -102,6 +102,11 @@ class Slack extends LoggerAppender
     protected $_addEmoji = false;
 
     /**
+     * @var \LoggerLoggingEvent
+     */
+    protected $_event;
+
+    /**
      * Should add emoji to attachment title.
      *
      * @return bool
@@ -229,6 +234,7 @@ class Slack extends LoggerAppender
     protected function append(LoggerLoggingEvent $event)
     {
         try {
+            $this->_event = $event;
             // format text with layout
             $this->_formatEventToText($event);
             // get slack client
@@ -236,7 +242,7 @@ class Slack extends LoggerAppender
             // generate message
             $message = $this->generateMessage();
             // send message
-            $message->send();
+            $this->_getSlackClient()->sendMessage($message);
 
             return true;
         } catch (\Throwable $e) {
@@ -297,6 +303,7 @@ class Slack extends LoggerAppender
      */
     protected function _initSlackClient(): self
     {
+        //@todo: move to const.
         $settings = [
             'link_names'   => $this->_isLinkNames(),
             'unfurl_media' => $this->_isUnfurlMedia(),
@@ -447,16 +454,6 @@ class Slack extends LoggerAppender
     }
 
     /**
-     * Get SendLogAsAttachment.
-     *
-     * @return bool
-     */
-    protected function _sendLogAsAttachment(): bool
-    {
-        return $this->_asAttachment;
-    }
-
-    /**
      * Set SendLogAsAttachment.
      *
      * @param bool|string $sendLogAsAttachment
@@ -465,6 +462,7 @@ class Slack extends LoggerAppender
      */
     public function setAsAttachment($sendLogAsAttachment): self
     {
+        // todo: test what log4php does! if bool only than cast ist
         if ('false' === $sendLogAsAttachment) {
             $sendLogAsAttachment = false;
         }
@@ -480,6 +478,7 @@ class Slack extends LoggerAppender
      */
     protected function _generateAttachment(): Attachment
     {
+        // todo: check if still needed
         $attachment = new Attachment([]);
         $attachment->setAuthorName('Full '.$this->getLevelName().' Message');
         $attachment->setAuthorIcon(':ghost:');
@@ -490,10 +489,7 @@ class Slack extends LoggerAppender
         // add text to attachment
         $attachment->setText($this->_getText());
         // inject color to attachment
-        $attachment = $this->_setColorByLevelName(
-            $attachment,
-            $this->getLevelName()
-        );
+        $attachment = $this->_setColor($attachment);
         // inject field of logger name
         $attachment = $this->_addFieldLoggerName($attachment);
         // inject field of date
@@ -541,32 +537,31 @@ class Slack extends LoggerAppender
      * Get color by level name.
      *
      * @param Attachment $attachment
-     * @param string     $levelName
      *
      * @return Attachment
      */
-    protected function _setColorByLevelName(
-        Attachment $attachment, $levelName
-    ): Attachment {
-        switch (true) {
-            case false !== \strpos($levelName, 'TRACE'):
-            case false !== \strpos($levelName, 'DEBUG'):
+    protected function _setColor(Attachment $attachment): Attachment
+    {
+        // get from config array bei event level (toInt)
+        switch ($this->_event->getLevel()->toInt()) {
+            case \LoggerLevel::TRACE:
+            case \LoggerLevel::DEBUG:
                 $attachment->setColor(self::COLOR_DEBUG);
 
                 break;
-            case false !== \strpos($levelName, 'INFO'):
+            case \LoggerLevel::INFO:
                 $attachment->setColor(self::COLOR_INFO);
 
                 break;
-            case false !== \strpos($levelName, 'WARN'):
+            case \LoggerLevel::WARN:
                 $attachment->setColor(self::COLOR_WARN);
 
                 break;
-            case false !== \strpos($levelName, 'ERROR'):
+            case \LoggerLevel::ERROR:
                 $attachment->setColor(self::COLOR_ERROR);
 
                 break;
-            case false !== \strpos($levelName, 'FATAL'):
+            case \LoggerLevel::FATAL:
                 $attachment->setColor(self::COLOR_FATAL);
 
                 break;
@@ -653,7 +648,7 @@ class Slack extends LoggerAppender
     public function generateMessage(): \Maknz\Slack\Message
     {
         // create message
-        $message = new \Maknz\Slack\Message($this->_getSlackClient());
+        $message = $this->_getSlackClient()->createMessage();
         // set username
         $message->from($this->_getUsername());
         // set icon
@@ -663,7 +658,7 @@ class Slack extends LoggerAppender
         // allow markdown in message
         $message->setAllowMarkdown($this->_isAllowMarkdown());
         // send log message as attachment
-        if (\true === $this->_sendLogAsAttachment()) {
+        if ($this->_asAttachment) {
             // inject formatted message from event
             $message->attach($this->_generateAttachment());
         }

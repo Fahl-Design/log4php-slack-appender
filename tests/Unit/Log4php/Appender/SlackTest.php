@@ -190,7 +190,7 @@ class SlackTest extends \Codeception\Test\Unit
         $appenderSlack = clone $this->_subject;
         $appenderSlack->setSlackClient($slackClientMock);
 
-        $method = new ReflectionMethod(\get_class($appenderSlack), '_setColorByLevelName');
+        $method = new ReflectionMethod(\get_class($appenderSlack), '_setColor');
         $method->setAccessible(true);
 
         $attachment = new \Maknz\Slack\Attachment([]);
