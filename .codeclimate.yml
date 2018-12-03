@@ -60,14 +60,9 @@ plugins:
   duplication:
     enabled: true
 
-exclude_patterns:
+exclude_paths:
+  - "tests/**.php"
   - .git/**/*
   - vendor/**/*
   - tests/**/*
   - wiki/**/*
-ratings:
-  paths:
-    - src/**
-    - "**.php"
-exclude_paths:
-  - "tests/**.php"
