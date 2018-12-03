@@ -48,7 +48,7 @@
   "scripts": {
     "php-cs-fixer": "php-cs-fixer fix -v --path-mode=intersection --config=.php_cs",
     "run-tests": [
-      "./vendor/bin/phpunit --config=phpunit.xml"
+      "./vendor/bin/codecept run"
     ],
     "cs-check": [
       "./vendor/bin/php-cs-fixer fix --dry-run -vv"
@@ -57,9 +57,9 @@
       "echo 'Activating xDebug'",
       "echo 'zend_extension=xdebug.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0",
       "echo 'Build coverage'",
-      "./vendor/bin/phpunit --coverage-clover=coverage.xml",
+      "./vendor/bin/codecept run --coverage --coverage-xml=coverage.xml",
       "echo 'Send coverage'",
-      "./vendor/bin/test-reporter --coverage-report=coverage.xml || return 0"
+      "./vendor/bin/test-reporter --coverage-report=./build/logs/coverage.xml || return 0"
     ]
   }
 }
