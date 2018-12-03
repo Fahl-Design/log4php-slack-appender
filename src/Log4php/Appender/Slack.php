@@ -155,6 +155,20 @@ class Slack extends LoggerAppender
     }
 
     /**
+     * Set Event
+     *
+     * @param LoggerLoggingEvent $event
+     *
+     * @return $this
+     */
+    public function setEvent(LoggerLoggingEvent $event): self
+    {
+        $this->_event = $event;
+
+        return $this;
+    }
+
+    /**
      * Get UnfurlLinks.
      *
      * @return bool

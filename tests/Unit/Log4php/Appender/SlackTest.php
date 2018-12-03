@@ -8,6 +8,7 @@ use Logger;
 use LoggerLevel;
 use LoggerLoggingEvent;
 use Maknz\Slack\Attachment;
+use Maknz\Slack\Message;
 use Mockery;
 use ReflectionMethod;
 use WebProject\Log4php\Appender\Slack;
@@ -147,9 +148,21 @@ class SlackTest extends \Codeception\Test\Unit
     public function testAppendFunction(): void
     {
         // Arrange
-        $appenderSlack = clone $this->_subject;
-        $appenderSlack->setChannel('#test');
+        $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
+        $slackClientMock->shouldReceive('sendMessage')->andReturn(true);
+        $slackClientMock
+            ->shouldReceive('createMessage')
+            ->andReturn(new Message($slackClientMock));
 
+        $appenderSlack = clone $this->_subject;
+        $appenderSlack->setName('unitTestLogger');
+        $appenderSlack->setAllowMarkdown(true);
+        $appenderSlack->setSlackClient($slackClientMock);
+        $event = \Mockery::mock(LoggerLoggingEvent::class);
+        $event->shouldReceive('getLevel')->andReturn(\LoggerLevel::toLevel(\LoggerLevel::DEBUG));
+        $appenderSlack->setEvent($event);
+        $appenderSlack->setChannel('#test');
+        $this->_subject = $appenderSlack;
         $method = new ReflectionMethod(\get_class($this->_subject), 'append');
         $method->setAccessible(true);
         // Act
@@ -162,9 +175,20 @@ class SlackTest extends \Codeception\Test\Unit
     public function testAppendFunctionNoMarkup(): void
     {
         // Arrange
-        $appenderSlack = clone $this->_subject;
-        $appenderSlack->setAllowMarkdown(false);
-        $appenderSlack->setChannel('#test');
+        $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
+        $slackClientMock->shouldReceive('sendMessage')->andReturn(true);
+        $slackClientMock
+            ->shouldReceive('createMessage')
+            ->andReturn(new Message(clone $slackClientMock));
+
+        $appenderSlack = $this->_subject;
+        $appenderSlack->setName('unitTestLogger');
+        $appenderSlack->setAllowMarkdown(true);
+        $appenderSlack->setSlackClient($slackClientMock);
+        $appenderSlack->setChannel('test');
+        $event = \Mockery::mock(LoggerLoggingEvent::class);
+        $event->shouldReceive('getLevel')->andReturn(\LoggerLevel::toLevel(\LoggerLevel::DEBUG));
+        $appenderSlack->setEvent($event);
 
         $method = new ReflectionMethod(\get_class($this->_subject), 'append');
         $method->setAccessible(true);
@@ -186,9 +210,18 @@ class SlackTest extends \Codeception\Test\Unit
         // Arrange
         $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
         $slackClientMock->shouldReceive('sendMessage')->andReturn(true);
+        $slackClientMock
+            ->shouldReceive('createMessage')
+            ->andReturn(new Message($slackClientMock));
 
         $appenderSlack = clone $this->_subject;
+        $appenderSlack->setName('unitTestLogger');
+        $appenderSlack->setAllowMarkdown(true);
         $appenderSlack->setSlackClient($slackClientMock);
+        $appenderSlack->setChannel('test');
+        $event = \Mockery::mock(LoggerLoggingEvent::class);
+        $event->shouldReceive('getLevel')->once()->andReturn(\LoggerLevel::toLevel($loggerLevel));
+        $appenderSlack->setEvent($event);
 
         $method = new ReflectionMethod(\get_class($appenderSlack), '_setColor');
         $method->setAccessible(true);
@@ -206,12 +239,12 @@ class SlackTest extends \Codeception\Test\Unit
     public function _levelAndColorProvider(): array
     {
         return [
-            ['DEBUG', '#BDBDBD'],
-            ['INFO', '#64B5F6'],
-            ['WARN', '#FFA726'],
-            ['ERROR', '#EF6C00'],
-            ['FATAL', '#D84315'],
-            ['', 'good']
+            [\LoggerLevel::DEBUG, '#BDBDBD'],
+            [\LoggerLevel::INFO, '#64B5F6'],
+            [\LoggerLevel::WARN, '#FFA726'],
+            [\LoggerLevel::ERROR, '#EF6C00'],
+            [\LoggerLevel::FATAL, '#D84315'],
+            [\LoggerLevel::OFF, 'good']
         ];
     }
 
@@ -223,13 +256,18 @@ class SlackTest extends \Codeception\Test\Unit
         // Arrange
         $slackClientMock = Mockery::mock(\Maknz\Slack\Client::class);
         $slackClientMock->shouldReceive('sendMessage')->andReturn(true);
+        $slackClientMock
+            ->shouldReceive('createMessage')
+            ->andReturn(new Message($slackClientMock));
 
         $appenderSlack = clone $this->_subject;
         $appenderSlack->setName('unitTestLogger');
         $appenderSlack->setAllowMarkdown(true);
         $appenderSlack->setSlackClient($slackClientMock);
         $appenderSlack->setChannel('test');
-
+        $event = \Mockery::mock(LoggerLoggingEvent::class);
+        $event->shouldReceive('getLevel')->once()->andReturn(\LoggerLevel::toLevel(\LoggerLevel::DEBUG));
+        $appenderSlack->setEvent($event);
         // Act
         $message = $appenderSlack->generateMessage();
         $attachments = $message->getAttachments();
