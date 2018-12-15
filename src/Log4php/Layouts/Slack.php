@@ -44,7 +44,7 @@ class Slack extends LoggerLayoutSimple
     }
 
     /**
-     * Get AddLoggerName
+     * Get AddLoggerName.
      *
      * @return bool
      */

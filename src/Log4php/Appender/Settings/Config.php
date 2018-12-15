@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace WebProject\Log4php\Appender\Settings;
 
 /**
- * Class Config
+ * Class Config.
  */
 class Config implements \JsonSerializable
 {
@@ -22,7 +23,7 @@ class Config implements \JsonSerializable
         \LoggerLevel::INFO  => self::COLOR_INFO,
         \LoggerLevel::WARN  => self::COLOR_WARN,
         \LoggerLevel::ERROR => self::COLOR_ERROR,
-        \LoggerLevel::FATAL => self::COLOR_FATAL
+        \LoggerLevel::FATAL => self::COLOR_FATAL,
     ];
     public const KEY_ENDPOINT = 'endpoint';
     public const KEY_CHANNEL = 'channel';
@@ -48,7 +49,7 @@ class Config implements \JsonSerializable
      */
     protected const DEFAULT_CONFIG = [
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Incoming webhook endpoint
          *-------------------------------------------------------------
@@ -59,7 +60,7 @@ class Config implements \JsonSerializable
          */
         self::KEY_ENDPOINT => '',
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Default channel
          *-------------------------------------------------------------
@@ -70,7 +71,7 @@ class Config implements \JsonSerializable
          */
         self::KEY_CHANNEL => '#general',
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Default username
          *-------------------------------------------------------------
@@ -80,7 +81,7 @@ class Config implements \JsonSerializable
          */
         self::KEY_USERNAME => 'Robot',
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Default icon
          *-------------------------------------------------------------
@@ -92,7 +93,7 @@ class Config implements \JsonSerializable
          */
         self::KEY_ICON => null,
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Link names
          *-------------------------------------------------------------
@@ -102,7 +103,7 @@ class Config implements \JsonSerializable
          */
         self::KEY_LINK_NAMES => false,
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Unfurl links
          *-------------------------------------------------------------
@@ -111,7 +112,7 @@ class Config implements \JsonSerializable
          */
         self::KEY_UNFURL_LINKS => false,
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Unfurl media
          *-------------------------------------------------------------
@@ -121,7 +122,7 @@ class Config implements \JsonSerializable
          */
         self::KEY_UNFURL_MEDIA => true,
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Markdown in message text
          *-------------------------------------------------------------
@@ -133,7 +134,7 @@ class Config implements \JsonSerializable
          */
         self::KEY_ALLOW_MARKDOWN => true,
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Markdown in attachments
          *-------------------------------------------------------------
@@ -161,32 +162,32 @@ class Config implements \JsonSerializable
          */
         self::KEY_MARKDOWN_IN_ATTACHMENTS_FIELDS => [],
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Send Message as attachment
          *-------------------------------------------------------------
          */
         self::KEY_AS_ATTACHMENT => true,
-        /**
+        /*
          *-------------------------------------------------------------
          * Max Send Message field length (full message will be added
          *-------------------------------------------------------------
          */
         self::KEY_MAX_MESSAGE_LENGTH => 170,
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Change Icon by log level
          *-------------------------------------------------------------
          */
         self::KEY_SET_ICON_BY_LOG_LEVEL => true,
 
-        /**
+        /*
          *-------------------------------------------------------------
          * Change Icon by log level
          *-------------------------------------------------------------
          */
-        self::KEY_ADD_LOGGER_TO_MESSAGE => true
+        self::KEY_ADD_LOGGER_TO_MESSAGE => true,
     ];
 
     /**
@@ -205,7 +206,7 @@ class Config implements \JsonSerializable
     }
 
     /**
-     * Get setting
+     * Get setting.
      *
      * @param string $setting
      *
@@ -223,7 +224,7 @@ class Config implements \JsonSerializable
     }
 
     /**
-     * Set
+     * Set.
      *
      * @param string $setting
      * @param mixed  $value
@@ -238,7 +239,7 @@ class Config implements \JsonSerializable
     }
 
     /**
-     * To Array
+     * To Array.
      *
      * @return array
      */
@@ -248,7 +249,7 @@ class Config implements \JsonSerializable
     }
 
     /**
-     * Specify data which should be serialized to JSON
+     * Specify data which should be serialized to JSON.
      *
      * @link  https://php.net/manual/en/jsonserializable.jsonserialize.php
      *
@@ -263,7 +264,7 @@ class Config implements \JsonSerializable
     }
 
     /**
-     * Get Icon by log event
+     * Get Icon by log event.
      *
      * @param \LoggerLoggingEvent $event
      *

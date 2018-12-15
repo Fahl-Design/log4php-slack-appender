@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace WebProject\Log4php\Slack;
@@ -47,7 +48,7 @@ class Client
     }
 
     /**
-     * Get Name
+     * Get Name.
      *
      * @return string
      */
@@ -97,7 +98,7 @@ class Client
     }
 
     /**
-     * Set Text
+     * Set Text.
      *
      * @param string $text
      *
@@ -151,7 +152,7 @@ class Client
     }
 
     /**
-     * Get Config
+     * Get Config.
      *
      * @return Config
      */
@@ -343,7 +344,7 @@ class Client
         $settings = [
             'link_names'   => $this->_getConfig()->get(Config::KEY_LINK_NAMES),
             'unfurl_media' => $this->_getConfig()->get(Config::KEY_UNFURL_MEDIA),
-            'unfurl_link'  => $this->_getConfig()->get(Config::KEY_UNFURL_LINKS)
+            'unfurl_link'  => $this->_getConfig()->get(Config::KEY_UNFURL_LINKS),
         ];
         $slackClient = new SlackApiClient(
             (string) $this->_getConfig()->get(Config::KEY_ENDPOINT), $settings
@@ -355,7 +356,7 @@ class Client
     }
 
     /**
-     * Factory
+     * Factory.
      *
      * @param Config $config
      *

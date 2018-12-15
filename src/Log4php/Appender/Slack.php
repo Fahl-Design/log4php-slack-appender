@@ -231,6 +231,7 @@ class Slack extends LoggerAppender
 
         return $this;
     }
+
     /**
      * Set AddLoggerNameToMessage.
      *
