@@ -341,12 +341,9 @@ class Client
     protected function _initSlackApiClient(): SlackApiClient
     {
         $settings = [
-            'link_names'
-                => $this->_getConfig()->get(Config::KEY_LINK_NAMES),
-            'unfurl_media'
-                => $this->_getConfig()->get(Config::KEY_UNFURL_MEDIA),
-            'unfurl_link'
-                => $this->_getConfig()->get(Config::KEY_UNFURL_LINKS),
+            'link_names'   => $this->_getConfig()->get(Config::KEY_LINK_NAMES),
+            'unfurl_media' => $this->_getConfig()->get(Config::KEY_UNFURL_MEDIA),
+            'unfurl_link'  => $this->_getConfig()->get(Config::KEY_UNFURL_LINKS),
         ];
         $slackClient = new SlackApiClient(
             (string) $this->_getConfig()->get(Config::KEY_ENDPOINT), $settings
