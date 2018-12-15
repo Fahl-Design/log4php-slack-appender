@@ -10,8 +10,8 @@
 [![Monthly Downloads](https://poser.pugx.org/fahl-design/log4php-slack-appender/d/monthly?format=flat-square)](https://packagist.org/packages/fahl-design/log4php-slack-appender)
 [![Daily Downloads](https://poser.pugx.org/fahl-design/log4php-slack-appender/d/daily?format=flat-square)](https://packagist.org/packages/fahl-design/log4php-slack-appender)
 
-[![Code Climate](https://img.shields.io/codeclimate/github/Fahl-Design/log4php-slack-appender.svg?style=flat-square)](https://codeclimate.com/github/Fahl-Design/log4php-slack-appender/)
-[![Code Climate](https://img.shields.io/codeclimate/issues//github/Fahl-Design/log4php-slack-appender.svg?style=flat-square)](https://codeclimate.com/github/Fahl-Design/log4php-slack-appender/)
+[![Maintainability](https://api.codeclimate.com/v1/badges/528fbbf3ba863d5f7ed4/maintainability)](https://codeclimate.com/github/Fahl-Design/log4php-slack-appender/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/528fbbf3ba863d5f7ed4/test_coverage)](https://codeclimate.com/github/Fahl-Design/log4php-slack-appender/test_coverage)
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/13d67fe1145c4557a5ccb2ee07ec81e6)](https://www.codacy.com/app/Fahl-Design/log4php-slack-appender?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Fahl-Design/log4php-slack-appender&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/13d67fe1145c4557a5ccb2ee07ec81e6)](https://www.codacy.com/app/Fahl-Design/log4php-slack-appender?utm_source=github.com&utm_medium=referral&utm_content=Fahl-Design/log4php-slack-appender&utm_campaign=Badge_Coverage)
