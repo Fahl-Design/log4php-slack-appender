@@ -13,9 +13,12 @@
 [![Code Climate](https://img.shields.io/codeclimate/github/Fahl-Design/log4php-slack-appender.svg?style=flat-square)](https://codeclimate.com/github/Fahl-Design/log4php-slack-appender/)
 [![Code Climate](https://img.shields.io/codeclimate/issues//github/Fahl-Design/log4php-slack-appender.svg?style=flat-square)](https://codeclimate.com/github/Fahl-Design/log4php-slack-appender/)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/13d67fe1145c4557a5ccb2ee07ec81e6)](https://www.codacy.com/app/Fahl-Design/log4php-slack-appender?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Fahl-Design/log4php-slack-appender&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/13d67fe1145c4557a5ccb2ee07ec81e6)](https://www.codacy.com/app/Fahl-Design/log4php-slack-appender?utm_source=github.com&utm_medium=referral&utm_content=Fahl-Design/log4php-slack-appender&utm_campaign=Badge_Coverage)
 
 [![PHP-Eye](https://php-eye.com/badge/fahl-design/log4php-slack-appender/tested.svg?style=flat-square)](https://packagist.org/packages/fahl-design/log4php-slack-appender)
 [![PHP-Eye](https://php-eye.com/badge/fahl-design/log4php-slack-appender/not-tested.svg?style=flat-square)](https://packagist.org/packages/fahl-design/log4php-slack-appender)
+
 ### Master Branch
 [![Build Status](https://img.shields.io/travis/Fahl-Design/log4php-slack-appender/master.svg?style=flat-square)](https://travis-ci.org/Fahl-Design/log4php-slack-appender)
 [![StyleCI](https://styleci.io/repos/74897031/shield?branch=master&format=flat-square)](https://styleci.io/repos/74897031)
@@ -33,7 +36,7 @@ Read the instructions below to get it set up.
 
 ## Requirements
 
-PHP >= 5.5 || >= 7
+PHP >= 7.1
 
 ## Installation
 
@@ -69,46 +72,80 @@ After you got your hook url add it as endpoint to your configuration
 ```
 
 ### php (config.php) appender config example
-
 ```php
-    <?php 
+<?php 
+    declare(strict_types=1);
+    
+    use WebProject\Log4php\Appender\Settings\Config;
+    use WebProject\Log4php\Appender\Slack;
+    
     return [
         'rootLogger' => [
-            'appenders' => ['default'],
+            'level'     => 'DEBUG',
+            'appenders' => ['slack_appender'],
         ],
         'myLogger' => [
-            'appenders' => ['default'],
+            'appenders' => ['slack_appender'],
         ],
         'appenders' => [
-            'default' => [
-                'class' => 'LoggerAppenderSlack',
+            'slack_appender' => [
+                'class'  => Slack::class,
                 'params' => [
-                    'endpoint' => 'https://hooks.slack.com/services/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX',
-                    'channel' => '#yourChannel',
-                    'username' => 'log4php',
-                    'icon' => ':ghost:', // emoji or an icon url
+                    Config::KEY_ENDPOINT                             => 'https://hooks.slack.com/services/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX',
+                    Config::KEY_CHANNEL                              => '#general',
+                    Config::KEY_USERNAME                             => 'log4php',
+                    Config::KEY_ICON                                 => ':ghost:', // emoji or an icon url
+                    Config::KEY_ALLOW_MARKDOWN                       => true,
+                    Config::KEY_MARKDOWN_IN_ATTACHMENTS_FIELDS       => [
+                        Config::VALUE_MARKDOWN_IN_ATTACHMENTS_PRETEXT,
+                        Config::VALUE_MARKDOWN_IN_ATTACHMENTS_TEXT,
+                        Config::VALUE_MARKDOWN_IN_ATTACHMENTS_TITLE,
+                        Config::VALUE_MARKDOWN_IN_ATTACHMENTS_FIELDS,
+                        Config::VALUE_MARKDOWN_IN_ATTACHMENTS_FALLBACK
+                    ],
+                    Config::KEY_AS_ATTACHMENT                 => true,
+                    Config::KEY_LINK_NAMES                    => true,
+                    Config::KEY_UNFURL_LINKS                  => false,
+                    Config::KEY_UNFURL_MEDIA                  => true,
+                    Config::KEY_SET_ICON_BY_LOG_LEVEL         => true,
+                    Config::KEY_ADD_LOGGER_TO_MESSAGE         => true
                 ]
             ]
         ]
     ];
 ```
-
 ## Usage
 
 Check example (src/examples)
-
-
 ```php
-require_once __DIR__.'/../../../vendor/autoload.php';
+<?php
+declare(strict_types=1);
+/**
+ * This script requires installation as composer package.
+ */
+require_once __DIR__.'/../../vendor/autoload.php';
 
-Logger::configure(__DIR__.'/../resources/appender_slack.xml');
+try {
+    if (!\is_file(__DIR__.'/../resources/config.local.php')) {
+        throw new RuntimeException('local config file is missing');
+    }
 
-$logger = Logger::getLogger('myLogger');
-$logger->debug('debug-message');
-$logger->info('info-message');
-$logger->warn('warn-message');
-$logger->error('error-message');
-$logger->fatal('fatal-message');
+    Logger::configure(include __DIR__.'/../resources/config.local.php');
 
+    Logger::getRootLogger()->fatal('root-logger-fatal-message');
+    $logger = Logger::getLogger('myLogger');
+    $logger->warn('warn-message @channel *WATTT*');
+
+    $logger = Logger::getLogger('myLogger');
+    $logger->debug('debug-message');
+    $logger->info('info-message');
+    $logger->warn('warn-message @channel *WATTT*');
+    $logger->error('error-message');
+    $logger->fatal('fatal-message');
+} catch (\Throwable $e) {
+    \print_r($e->getMessage());
+    \print_r($e->getTraceAsString());
+    exit(255);
+}
 ```
 

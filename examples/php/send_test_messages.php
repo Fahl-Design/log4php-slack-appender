@@ -15,7 +15,7 @@ try {
     Logger::getRootLogger()->fatal('root-logger-fatal-message');
     $logger = Logger::getLogger('myLogger');
     $logger->warn('warn-message @channel *WATTT*');
-    exit;
+
     $logger = Logger::getLogger('myLogger');
     $logger->debug('debug-message');
     $logger->info('info-message');
@@ -23,8 +23,7 @@ try {
     $logger->error('error-message');
     $logger->fatal('fatal-message');
 } catch (\Throwable $e) {
-    var_dump($e->getMessage());
-    var_dump($e->getTraceAsString());
-    exit;
+    \print_r($e->getMessage());
+    \print_r($e->getTraceAsString());
     exit(255);
 }
