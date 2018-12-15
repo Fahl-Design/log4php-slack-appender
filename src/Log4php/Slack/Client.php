@@ -177,12 +177,7 @@ class Client
         Config $config, SlackApiClient $apiClient = null
     ) {
         $this->_config = $config;
-
-        if (null === $apiClient) {
-            $this->_initSlackApiClient();
-        } else {
-            $this->_slackApiClient = $apiClient;
-        }
+        $this->_slackApiClient = $apiClient;
     }
 
     /**
