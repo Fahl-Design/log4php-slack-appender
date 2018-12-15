@@ -6,6 +6,7 @@ namespace WebProject\Log4php\Layouts;
 
 use LoggerLayoutSimple;
 use LoggerLoggingEvent;
+use WebProject\Log4php\Settings\Config;
 
 /**
  * A simple slack layout.
@@ -28,6 +29,31 @@ use LoggerLoggingEvent;
 class Slack extends LoggerLayoutSimple
 {
     /**
+     * @var Config
+     */
+    protected $_config;
+
+    /**
+     * Slack constructor.
+     *
+     * @param Config $config
+     */
+    public function __construct(Config $config)
+    {
+        $this->_config = $config;
+    }
+
+    /**
+     * Get AddLoggerName
+     *
+     * @return bool
+     */
+    protected function _isActiveAddLoggerName(): bool
+    {
+        return (bool) $this->_config->get(Config::KEY_ADD_LOGGER_TO_MESSAGE);
+    }
+
+    /**
      * Returns the log statement in a format consisting of the
      * <b>message</b>. For example,
      * <samp> "A message" </samp>.
@@ -38,8 +64,12 @@ class Slack extends LoggerLayoutSimple
      */
     public function format(LoggerLoggingEvent $event): string
     {
-        $message = $event->getRenderedMessage();
+        $message = '';
+        if ($this->_isActiveAddLoggerName()) {
+            $message .= 'Logger ('.$event->getLoggerName().') ';
+        }
+        $message .= $event->getRenderedMessage().\PHP_EOL;
 
-        return "$message".\PHP_EOL;
+        return $message;
     }
 }
