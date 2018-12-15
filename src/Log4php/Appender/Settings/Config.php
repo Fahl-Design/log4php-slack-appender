@@ -33,7 +33,8 @@ class Config implements \JsonSerializable
     public const KEY_UNFURL_LINKS = 'unfurlLinks';
     public const KEY_UNFURL_MEDIA = 'unfurlMedia';
     public const KEY_ALLOW_MARKDOWN = 'allowMarkdown';
-    public const KEY_MARKDOWN_IN_ATTACHMENTS_FIELDS = 'markdownInAttachmentsFields';
+    public const KEY_MARKDOWN_IN_ATTACHMENTS_FIELDS
+        = 'markdownInAttachmentsFields';
     public const VALUE_MARKDOWN_IN_ATTACHMENTS_PRETEXT = 'pretext';
     public const VALUE_MARKDOWN_IN_ATTACHMENTS_TEXT = 'text';
     public const VALUE_MARKDOWN_IN_ATTACHMENTS_TITLE = 'title';
