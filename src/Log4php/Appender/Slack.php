@@ -253,9 +253,8 @@ class Slack extends LoggerAppender
      */
     public function __construct(string $name = '')
     {
-        parent::__construct($name);
-
         $this->_config = new Config([]);
+        parent::__construct($name);
     }
 
     /**
