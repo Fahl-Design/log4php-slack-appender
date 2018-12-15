@@ -14,7 +14,7 @@ class SlackTest extends \Codeception\Test\Unit
     public function testFormatWithLoggerNameActive()
     {
         // Arrange
-        $layout = new Slack(new Config([]));
+        $layout = new Slack(new Config());
         $testString = 'testString';
         $expected = 'Logger (TestLogger) testString'.\PHP_EOL;
         $logEvent = new \LoggerLoggingEvent(
