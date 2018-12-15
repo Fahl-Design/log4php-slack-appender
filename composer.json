@@ -39,7 +39,7 @@
   "autoload-dev": {
     "psr-4": {
       "WebProject\\Tests\\Helper\\": "tests/_support",
-      "WebProject\\Tests\\Unit\\": "tests/Unit"
+      "WebProject\\Tests\\Unit\\Log4php\\": "tests/Unit"
     }
   },
   "extra": {

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace WebProject\Tests\Unit\Layouts;
+namespace WebProject\Tests\Unit\Log4php\Layouts;
 
+use WebProject\Log4php\Appender\Settings\Config;
 use WebProject\Log4php\Layouts\Slack;
-use WebProject\Log4php\Settings\Config;
 
 /**
  * Class SlackTest
