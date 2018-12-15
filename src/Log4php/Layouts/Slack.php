@@ -6,7 +6,7 @@ namespace WebProject\Log4php\Layouts;
 
 use LoggerLayoutSimple;
 use LoggerLoggingEvent;
-use WebProject\Log4php\Settings\Config;
+use WebProject\Log4php\Appender\Settings\Config;
 
 /**
  * A simple slack layout.

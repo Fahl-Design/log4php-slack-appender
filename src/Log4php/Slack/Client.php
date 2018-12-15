@@ -7,7 +7,7 @@ use LoggerLoggingEvent as LogEvent;
 use Maknz\Slack\Attachment;
 use Maknz\Slack\Client as SlackApiClient;
 use Maknz\Slack\Message;
-use WebProject\Log4php\Settings\Config;
+use WebProject\Log4php\Appender\Settings\Config;
 
 /**
  * Class Client.

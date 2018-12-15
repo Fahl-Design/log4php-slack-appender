@@ -6,9 +6,8 @@ namespace WebProject\Log4php\Appender;
 
 use LoggerAppender;
 use LoggerLoggingEvent as LogEvent;
-use Maknz\Slack\Message;
+use WebProject\Log4php\Appender\Settings\Config;
 use WebProject\Log4php\Layouts\Slack as SlackLayout;
-use WebProject\Log4php\Settings\Config;
 use WebProject\Log4php\Slack\Client as SlackClient;
 
 /**

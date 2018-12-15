@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace WebProject\Log4php\Settings;
+namespace WebProject\Log4php\Appender\Settings;
 
 /**
  * Class Config
