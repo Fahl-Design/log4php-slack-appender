@@ -46,7 +46,7 @@ class Config implements \JsonSerializable
     /**
      * @var array
      */
-    protected static $_defaultConfig = [
+    protected const DEFAULT_CONFIG = [
 
         /**
          *-------------------------------------------------------------
@@ -201,7 +201,7 @@ class Config implements \JsonSerializable
      */
     public function __construct(array $config)
     {
-        self::$_config = \array_merge(self::$_defaultConfig, $config);
+        self::$_config = \array_merge(self::DEFAULT_CONFIG, $config);
     }
 
     /**
