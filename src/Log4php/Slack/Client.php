@@ -77,10 +77,10 @@ class Client
      */
     protected function _getIcon(LogEvent $event): string
     {
-        if ($this->_config->get(Config::KEY_SET_ICON_BY_LOG_LEVEL)) {
-            $icon = $this->_config->getIconByLogEvent($event);
+        if ($this->_getConfig()->get(Config::KEY_SET_ICON_BY_LOG_LEVEL)) {
+            $icon = $this->_getConfig()->getIconByLogEvent($event);
         } else {
-            $icon = (string) $this->_config->get(Config::KEY_ICON);
+            $icon = (string) $this->_getConfig()->get(Config::KEY_ICON);
         }
 
         return $icon;
@@ -122,7 +122,7 @@ class Client
         LogEvent $event, string $logMessage
     ): string {
         return '*'.$this->getLevelName($event).'* '
-            .'_( Appender: *'.$this->getName().'* )_ :'.' _'.$logMessage.'_';
+            .'_( Logger: *'.$this->getName().'* )_: '.$logMessage.'';
     }
 
     /**
@@ -148,6 +148,16 @@ class Client
 
         return \array_key_exists($levelAsInt, Config::COLORS) ?
             Config::COLORS[$levelAsInt] : Config::COLOR_DEFAULT;
+    }
+
+    /**
+     * Get Config
+     *
+     * @return Config
+     */
+    protected function _getConfig(): Config
+    {
+        return $this->_config;
     }
 
     /**
@@ -189,17 +199,19 @@ class Client
         // create message
         $message = $this->_getSlackApiClient()->createMessage();
         // set username
-        $message->from((string) $this->_config->get(Config::KEY_USERNAME));
+        $message->from((string) $this->_getConfig()->get(Config::KEY_USERNAME));
         // set icon
         $message->setIcon($this->_getIcon($event));
         // set channel
-        $message->setChannel((string) $this->_config->get(Config::KEY_CHANNEL));
+        $message->setChannel(
+            (string) $this->_getConfig()->get(Config::KEY_CHANNEL)
+        );
         // allow markdown in message
         $message->setAllowMarkdown(
-            (bool) $this->_config->get(Config::KEY_ALLOW_MARKDOWN)
+            (bool) $this->_getConfig()->get(Config::KEY_ALLOW_MARKDOWN)
         );
         // send log message as attachment
-        if ((bool) $this->_config->get(Config::KEY_AS_ATTACHMENT)) {
+        if ((bool) $this->_getConfig()->get(Config::KEY_AS_ATTACHMENT)) {
             // inject formatted message from event
             $message->attach($this->_generateAttachment($event));
         }
@@ -221,25 +233,27 @@ class Client
     {
         $attachment = new Attachment([]);
         $attachment->setAuthorName(
-            \ucfirst($this->getLevelName($event)).' Message'
+            'Full '.\ucfirst($this->getLevelName($event)).' Message'
         );
         $attachment->setAuthorIcon(':ghost:');
 
-        if ((bool) $this->_config->get(Config::KEY_ALLOW_MARKDOWN)) {
+        if ((bool) $this->_getConfig()->get(Config::KEY_ALLOW_MARKDOWN)) {
             $attachment->setMarkdownFields(
-                $this->_config->get(Config::KEY_MARKDOWN_IN_ATTACHMENTS_FIELDS)
+                $this->_getConfig()->get(
+                    Config::KEY_MARKDOWN_IN_ATTACHMENTS_FIELDS
+                )
             );
         }
         // add text to attachment
         $attachment->setText($this->_getText());
         // inject color to attachment
         $attachment->setColor($this->_getColor($event));
-        // inject field of logger name
-        $attachment = $this->_addFieldLoggerName($attachment);
-        // inject field of date
-        $this->_addFieldDate($attachment);
+        //$attachment->setPretext('preText');
         // add footer
-        $attachment->setFooter($this->getName());
+        $attachment->setFooter(
+            'Logger: *'.$this->getName().'* '.
+            '| Date: *'.(new \DateTime())->format('Y-m-d H:i:s').'*'
+        );
 
         return $attachment;
     }
@@ -257,12 +271,12 @@ class Client
     ): Message {
         $logMessage = $this->_getText();
 
-        $maxLength = $this->_config->get(Config::KEY_MAX_MESSAGE_LENGTH);
+        $maxLength = $this->_getConfig()->get(Config::KEY_MAX_MESSAGE_LENGTH);
         if (\strlen($logMessage) > $maxLength) {
             $logMessage = \substr($logMessage, 0, $maxLength);
         }
 
-        if ((bool) $this->_config->get(Config::KEY_ALLOW_MARKDOWN)) {
+        if ((bool) $this->_getConfig()->get(Config::KEY_ALLOW_MARKDOWN)) {
             $message->setText(
                 $this->_getMarkdownTitleText($event, $logMessage)
             );
@@ -327,12 +341,12 @@ class Client
     protected function _initSlackApiClient(): SlackApiClient
     {
         $settings = [
-            'link_names'   => $this->_config->get(Config::KEY_LINK_NAMES),
-            'unfurl_media' => $this->_config->get(Config::KEY_UNFURL_MEDIA),
-            'unfurl_link'  => $this->_config->get(Config::KEY_UNFURL_LINKS),
+            'link_names'   => $this->_getConfig()->get(Config::KEY_LINK_NAMES),
+            'unfurl_media' => $this->_getConfig()->get(Config::KEY_UNFURL_MEDIA),
+            'unfurl_link'  => $this->_getConfig()->get(Config::KEY_UNFURL_LINKS)
         ];
         $slackClient = new SlackApiClient(
-            (string) $this->_config->get(Config::KEY_ENDPOINT), $settings
+            (string) $this->_getConfig()->get(Config::KEY_ENDPOINT), $settings
         );
 
         $this->_slackApiClient = $slackClient;

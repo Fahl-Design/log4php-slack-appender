@@ -199,7 +199,7 @@ class Config implements \JsonSerializable
      *
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
         self::$_config = \array_merge(self::DEFAULT_CONFIG, $config);
     }

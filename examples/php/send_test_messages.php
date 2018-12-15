@@ -15,6 +15,7 @@ try {
     Logger::getRootLogger()->fatal('root-logger-fatal-message');
     $logger = Logger::getLogger('myLogger');
     $logger->warn('warn-message @channel *WATTT*');
+    exit;
     $logger = Logger::getLogger('myLogger');
     $logger->debug('debug-message');
     $logger->info('info-message');

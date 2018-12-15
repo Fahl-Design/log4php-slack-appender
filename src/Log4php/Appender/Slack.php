@@ -8,7 +8,7 @@ use LoggerAppender;
 use LoggerLoggingEvent as LogEvent;
 use WebProject\Log4php\Appender\Settings\Config;
 use WebProject\Log4php\Layouts\Slack as SlackLayout;
-use WebProject\Log4php\Slack\Client as SlackClient;
+use WebProject\Log4php\Slack\Client as SClient;
 
 /**
  * Slack appends log events to a Slack channel.
@@ -28,7 +28,7 @@ class Slack extends LoggerAppender
     protected $_config;
 
     /**
-     * @var SlackClient
+     * @var SClient
      */
     protected $_slackClient;
 
@@ -231,16 +231,31 @@ class Slack extends LoggerAppender
 
         return $this;
     }
+    /**
+     * Set AddLoggerNameToMessage.
+     *
+     * @param bool $value
+     *
+     * @return Slack
+     */
+    public function setAddLoggerNameToMessage(bool $value): self
+    {
+        $this->_config->set(
+            Config::KEY_ADD_LOGGER_TO_MESSAGE, $value
+        );
+
+        return $this;
+    }
 
     /**
      * Get SlackClient.
      *
-     * @return SlackClient
+     * @return SClient
      */
-    protected function _getSlackClient(): SlackClient
+    protected function _getSlackClient(): SClient
     {
         if (null === $this->_slackClient) {
-            $this->_slackClient = SlackClient::factory($this->_config);
+            $this->_slackClient = SClient::factory($this->_config);
         }
 
         return $this->_slackClient;
@@ -249,11 +264,15 @@ class Slack extends LoggerAppender
     /**
      * Slack constructor.
      *
-     * @param string $name
+     * @param string       $name
+     * @param null|SClient $slackClient
+     * @param null|Config  $config
      */
-    public function __construct(string $name = '')
-    {
-        $this->_config = new Config([]);
+    public function __construct(
+        string $name = '', SClient $slackClient = null, Config $config = null
+    ) {
+        $this->_config = $config ?? new Config();
+        $this->_slackClient = $slackClient ?? SClient::factory($this->_config);
         parent::__construct($name);
     }
 
@@ -271,7 +290,7 @@ class Slack extends LoggerAppender
     protected function append(LogEvent $event)
     {
         try {
-            $this->_getSlackClient()->setName($this->getName());
+            $this->_getSlackClient()->setName($event->getLoggerName());
             $this->_getSlackClient()->setText(
                 \trim($this->layout->format($event))
             );
