@@ -35,10 +35,6 @@ install:
 
 script:
   - ./build/script/travis_script.sh
-  -
-after_script:
-  - mv tests/_output/coverage.xml clover.xml
-  -
 after_success:
   - ./build/script/travis_after_success.sh
 
