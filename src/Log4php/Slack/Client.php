@@ -80,10 +80,10 @@ class Client
      */
     protected function _getIcon(LogEvent $event): string
     {
+        $icon = (string) $this->_getConfig()->get(Config::KEY_ICON);
+
         if ($this->_getConfig()->get(Config::KEY_SET_ICON_BY_LOG_LEVEL)) {
             $icon = $this->_getConfig()->getIconByLogEvent($event);
-        } else {
-            $icon = (string) $this->_getConfig()->get(Config::KEY_ICON);
         }
 
         return $icon;
