@@ -153,9 +153,7 @@ class Slack extends LoggerAppender
      */
     public function setEndpoint(string $endpoint): self
     {
-        if (true === \is_string($endpoint)
-            && 0 === \strpos($endpoint, Config::ENDPOINT_VALIDATION_STRING)
-        ) {
+        if (0 === \strpos($endpoint, Config::ENDPOINT_VALIDATION_STRING)) {
             $this->_config->set(Config::KEY_ENDPOINT, $endpoint);
 
             return $this;
@@ -273,7 +271,7 @@ class Slack extends LoggerAppender
         string $name = '', SClient $slackClient = null, Config $config = null
     ) {
         $this->_config = $config ?? new Config();
-        $this->_slackClient = $slackClient ?? SClient::factory($this->_config);
+        $this->_slackClient = $slackClient;
         parent::__construct($name);
     }
 
@@ -292,7 +290,7 @@ class Slack extends LoggerAppender
     {
         try {
             $this->_getSlackClient()->setName($event->getLoggerName());
-            $this->_getSlackClient()->setText(
+            $this->_getSlackClient()->setLogMessage(
                 \trim($this->layout->format($event))
             );
 

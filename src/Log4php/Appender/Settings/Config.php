@@ -80,7 +80,7 @@ class Config implements \JsonSerializable
          * The default username we should post as. Set to null to use
          * the default set on the Slack webhook
          */
-        self::KEY_USERNAME => 'Robot',
+        self::KEY_USERNAME => 'Log4php',
 
         /*
          *-------------------------------------------------------------
@@ -211,11 +211,13 @@ class Config implements \JsonSerializable
      *
      * @param string $setting
      *
+     * @throws \InvalidArgumentException
+     *
      * @return array|float|int|string
      */
     public function get(string $setting)
     {
-        if (\array_key_exists($setting, self::$_config)) {
+        if (\array_key_exists($setting, self::DEFAULT_CONFIG)) {
             return self::$_config[$setting];
         }
 
@@ -227,16 +229,24 @@ class Config implements \JsonSerializable
     /**
      * Set.
      *
-     * @param string $setting
-     * @param mixed  $value
+     * @param string                 $setting
+     * @param array|float|int|string $value
+     *
+     * @throws \InvalidArgumentException
      *
      * @return static
      */
     public function set(string $setting, $value): self
     {
-        self::$_config[$setting] = $value;
+        if (\array_key_exists($setting, self::DEFAULT_CONFIG)) {
+            self::$_config[$setting] = $value;
 
-        return $this;
+            return $this;
+        }
+
+        throw new \InvalidArgumentException(
+            'invalid setting key: ('.$setting.')'
+        );
     }
 
     /**
@@ -259,7 +269,7 @@ class Config implements \JsonSerializable
      *
      * @since 5.4.0
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): \stdClass
     {
         return (object) $this->toArray();
     }

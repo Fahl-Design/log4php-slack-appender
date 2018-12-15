@@ -36,28 +36,6 @@ class Client
     protected $_text;
 
     /**
-     * Get LevelName.
-     *
-     * @param LogEvent $event
-     *
-     * @return string
-     */
-    public function getLevelName(LogEvent $event): string
-    {
-        return $event->getLevel()->toString();
-    }
-
-    /**
-     * Get Name.
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->_name;
-    }
-
-    /**
      * Set Name.
      *
      * @param string $name
@@ -69,6 +47,30 @@ class Client
         $this->_name = $name;
 
         return $this;
+    }
+
+    /**
+     * Set Text.
+     *
+     * @param string $text
+     *
+     * @return Client
+     */
+    public function setLogMessage(string $text): self
+    {
+        $this->_text = $text;
+
+        return $this;
+    }
+
+    /**
+     * Get Name.
+     *
+     * @return string
+     */
+    protected function _getName(): string
+    {
+        return $this->_name ?? __CLASS__;
     }
 
     /**
@@ -98,20 +100,6 @@ class Client
     }
 
     /**
-     * Set Text.
-     *
-     * @param string $text
-     *
-     * @return Client
-     */
-    public function setText(string $text): self
-    {
-        $this->_text = $text;
-
-        return $this;
-    }
-
-    /**
      * Get Title with markdown.
      *
      * @param LogEvent $event
@@ -122,8 +110,8 @@ class Client
     protected function _getMarkdownTitleText(
         LogEvent $event, string $logMessage
     ): string {
-        return '*'.$this->getLevelName($event).'* '
-            .'_( Logger: *'.$this->getName().'* )_: '.$logMessage.'';
+        return '*'.$event->getLevel()->toString().'* '
+            .'_( Logger: *'.$this->_getName().'* )_: '.$logMessage.'';
     }
 
     /**
@@ -131,9 +119,9 @@ class Client
      *
      * @return string
      */
-    protected function _getText(): string
+    protected function _getLogMessage(LogEvent $event): string
     {
-        return $this->_text ?? '';
+        return $this->_text ?? $event->getRenderedMessage();
     }
 
     /**
@@ -182,11 +170,19 @@ class Client
     /**
      * Client constructor.
      *
-     * @param Config $config
+     * @param Config              $config
+     * @param null|SlackApiClient $apiClient
      */
-    public function __construct(Config $config)
-    {
+    public function __construct(
+        Config $config, SlackApiClient $apiClient = null
+    ) {
         $this->_config = $config;
+
+        if (null === $apiClient) {
+            $this->_initSlackApiClient();
+        } else {
+            $this->_slackApiClient = $apiClient;
+        }
     }
 
     /**
@@ -199,7 +195,7 @@ class Client
      */
     public function sendMessage(Message $message): bool
     {
-        $this->_slackApiClient->sendMessage($message);
+        $this->_getSlackApiClient()->sendMessage($message);
 
         return true;
     }
@@ -252,7 +248,7 @@ class Client
     {
         $attachment = new Attachment([]);
         $attachment->setAuthorName(
-            'Full '.\ucfirst($this->getLevelName($event)).' Message'
+            'Full '.\ucfirst($event->getLevel()->toString()).' Message'
         );
         $attachment->setAuthorIcon(':ghost:');
 
@@ -264,12 +260,12 @@ class Client
             );
         }
         // add text to attachment
-        $attachment->setText($this->_getText());
+        $attachment->setText($this->_getLogMessage($event));
         // inject color to attachment
         $attachment->setColor($this->_getColor($event));
         // add footer
         $attachment->setFooter(
-            'Logger: *'.$this->getName().'* '.
+            'Logger: *'.$this->_getName().'* '.
             '| Date: *'.(new \DateTime())->format('Y-m-d H:i:s').'*'
         );
 
@@ -287,7 +283,7 @@ class Client
     protected function _addMessageTitle(
         Message $message, LogEvent $event
     ): Message {
-        $logMessage = $this->_getText();
+        $logMessage = $this->_getLogMessage($event);
 
         $maxLength = $this->_getConfig()->get(Config::KEY_MAX_MESSAGE_LENGTH);
         if (\strlen($logMessage) > $maxLength) {
@@ -300,55 +296,13 @@ class Client
             );
         } else {
             $message->setText(
-                $this->getLevelName($event).' '.$this->_name.' '.$logMessage
+                $event->getLevel()->toString()
+                .' ( Logger: '.$this->_getName().' ): '
+                .$logMessage
             );
         }
 
         return $message;
-    }
-
-    /**
-     * Add logger name as attachment field.
-     *
-     * @param Attachment $attachment
-     *
-     * @return Attachment
-     */
-    protected function _addFieldLoggerName(Attachment $attachment): Attachment
-    {
-        $loggerField = new \Maknz\Slack\AttachmentField([]);
-        $loggerField
-            ->setTitle('Logger')
-            ->setValue($this->getName())
-            ->setShort(true);
-
-        $attachment->addField($loggerField);
-
-        return $attachment;
-    }
-
-    /**
-     * Add date as attachment field.
-     *
-     * @param Attachment $attachment
-     *
-     * @throws \Exception
-     *
-     * @return Attachment
-     */
-    protected function _addFieldDate(Attachment $attachment): Attachment
-    {
-        $dateField = new \Maknz\Slack\AttachmentField([]);
-        $dateField
-            ->setTitle('Date')
-            ->setValue(
-                (new \DateTime())->format('Y-m-d H:i:s')
-            )
-            ->setShort(true);
-
-        $attachment->addField($dateField);
-
-        return $attachment;
     }
 
     /**

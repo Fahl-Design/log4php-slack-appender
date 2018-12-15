@@ -17,7 +17,7 @@ class SlackTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
-    public function testGetDefaultLayout()
+    public function testGetDefaultLayout(): void
     {
         // Arrange
         $appender = new Slack('test');
@@ -27,7 +27,7 @@ class SlackTest extends \Codeception\Test\Unit
         $this->assertInstanceOf(SlackLayout::class, $layout);
     }
 
-    public function testAppendCanSendMessage()
+    public function testAppendCanSendMessage(): void
     {
         // Arrange
         $client = \Mockery::mock(\WebProject\Log4php\Slack\Client::class);
@@ -55,11 +55,81 @@ class SlackTest extends \Codeception\Test\Unit
         $this->assertTrue($result);
     }
 
-    public function testConfiguration()
+    public function testAppendErrorFromApiClient(): void
+    {
+        // Arrange
+        $client = \Mockery::mock(\WebProject\Log4php\Slack\Client::class);
+        $client->shouldAllowMockingProtectedMethods();
+        $client
+            ->shouldReceive('sendMessage')
+            ->once()
+            ->andThrow(\GuzzleHttp\Exception\TransferException::class);
+        $client
+            ->shouldReceive('_getConfig')
+            ->zeroOrMoreTimes()
+            ->andReturn(new Config());
+        $client->makePartial();
+
+        $appender = new Slack('test', $client, new Config());
+
+        $logEvent = new \LoggerLoggingEvent(
+            'fqcn',
+            'TestLogger',
+            \LoggerLevel::getLevelError(),
+            'testMessage'
+        );
+
+        // Act
+        $reflectionMethod = $this->tester->getReflectionMethod(
+            Slack::class, 'append'
+        );
+        $result = $reflectionMethod->invokeArgs($appender, [$logEvent]);
+
+        // Assert
+        $this->assertFalse($result);
+    }
+
+    public function testAppendErrorNotFromApiClient(): void
+    {
+        // Arrange
+        $this->expectException(\RuntimeException::class);
+
+        $client = \Mockery::mock(\WebProject\Log4php\Slack\Client::class);
+        $client->shouldAllowMockingProtectedMethods();
+        $client
+            ->shouldReceive('sendMessage')
+            ->once()
+            ->andThrow(\RuntimeException::class);
+        $client
+            ->shouldReceive('_getConfig')
+            ->zeroOrMoreTimes()
+            ->andReturn(new Config());
+        $client->makePartial();
+
+        $appender = new Slack('test', $client, new Config());
+
+        $logEvent = new \LoggerLoggingEvent(
+            'fqcn',
+            'TestLogger',
+            \LoggerLevel::getLevelError(),
+            'testMessage'
+        );
+
+        // Act
+        $reflectionMethod = $this->tester->getReflectionMethod(
+            Slack::class, 'append'
+        );
+        $result = $reflectionMethod->invokeArgs($appender, [$logEvent]);
+
+        // Assert
+        $this->assertFalse($result);
+    }
+
+    public function testConfiguration(): void
     {
         // Arrange
         \Logger::configure(
-            include __DIR__.'/../../../examples/resources/config.dist.php'
+            require __DIR__.'/../../../examples/resources/config.dist.php'
         );
         // Act
         /** @var Slack $loggerAppender */
@@ -82,5 +152,36 @@ class SlackTest extends \Codeception\Test\Unit
             $layout
         );
         \Logger::clear();
+    }
+
+    /**
+     * @dataProvider configValidationData
+     *
+     * @param string $setter
+     * @param string $value
+     * @param string $errorMessage
+     */
+    public function testConfigSetterValidation(string $setter, string $value, string $errorMessage): void
+    {
+        // Arrange
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage($errorMessage);
+
+        $appender = new Slack('test');
+
+        // Act
+        $appender->{$setter}($value);
+        // Assert
+        // error
+    }
+
+    public function configValidationData(): array
+    {
+        return [
+            ['setIcon','','icon invalid'],
+            ['setEndpoint','foobar','invalid endpoint'],
+            ['setUsername','','username invalid'],
+            ['setChannel','','channel invalid'],
+        ];
     }
 }
