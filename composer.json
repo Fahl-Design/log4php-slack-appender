@@ -10,23 +10,38 @@
       "role": "developer"
     }
   ],
-  "minimum-stability": "dev",
+  "config": {
+    "optimize-autoloader": true
+  },
   "prefer-stable": true,
   "require": {
-    "php": ">= 5.5 || >=7",
-    "roave/security-advisories": "dev-master",
+    "php": "^7.1",
     "apache/log4php": "^2.3",
-    "maknz/slack": "1.7.*"
+    "alek13/slack": "^1",
+    "ext-json": "*",
+    "ext-curl": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "4.8.* || 5.6.*",
-    "phpunit/php-invoker": "1.*",
-    "mockery/mockery": "0.9.*",
+    "roave/security-advisories": "dev-master",
+    "codeception/codeception": "2.*",
+    "codeception/mockery-module": "0.*",
+    "mockery/mockery": "1.*",
     "friendsofphp/php-cs-fixer": "2.*",
-    "codeclimate/php-test-reporter": "^0.3.2"
+    "codeclimate/php-test-reporter": "^0.4",
+    "monolog/monolog": "1.*",
+    "codacy/coverage": "1.*",
+    "symfony/var-dumper": "4.*"
   },
   "autoload": {
-    "classmap": ["src/main/php/"]
+    "psr-4": {
+        "WebProject\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WebProject\\Tests\\Helper\\": "tests/_support",
+      "WebProject\\Tests\\Unit\\Log4php\\": "tests/unit"
+    }
   },
   "extra": {
     "branch-alias": {
@@ -34,8 +49,9 @@
     }
   },
   "scripts": {
+    "php-cs-fixer": "php-cs-fixer fix -v --path-mode=intersection --config=.php_cs",
     "run-tests": [
-      "./vendor/bin/phpunit --config=phpunit.xml"
+      "./vendor/bin/codecept run"
     ],
     "cs-check": [
       "./vendor/bin/php-cs-fixer fix --dry-run -vv"
@@ -44,9 +60,9 @@
       "echo 'Activating xDebug'",
       "echo 'zend_extension=xdebug.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini || return 0",
       "echo 'Build coverage'",
-      "./vendor/bin/phpunit --coverage-clover=coverage.xml",
+      "./vendor/bin/codecept run --coverage --coverage-xml=coverage.xml",
       "echo 'Send coverage'",
-      "./vendor/bin/test-reporter --coverage-report=coverage.xml || return 0"
+      "./vendor/bin/test-reporter --coverage-report=./build/logs/coverage.xml || return 0"
     ]
   }
 }

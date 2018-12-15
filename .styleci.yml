@@ -4,8 +4,8 @@ risky: false
 
 finder:
   exclude:
-    - "src/test"
+    - "tests"
   name:
     - "*.php"
   path:
-    - "src/main"
+    - "src"

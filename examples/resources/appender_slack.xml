@@ -14,14 +14,54 @@
  limitations under the License.
 -->
 <log4php:configuration xmlns:log4php="http://logging.apache.org/log4php/" threshold="all">
-    <appender name="default" class="LoggerAppenderSlack">
+    <appender name="default" class="\WebProject\Log4php\Appender\Slack">
         <!-- get endpoint url from https://my.slack.com/services/new/incoming-webhook -->
         <param name="endpoint" value="https://hooks.slack.com/services/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX/XXXXXXXXXXXXXXX" />
+        <!-- Settings -->
+        <!--
+            channel: the default channel that messages will be sent to
+            string
+            default: the setting on the webhook
+        -->
         <param name="channel" value="#yourChannel" />
+        <!--
+            username: the default username that messages will be sent from
+            string
+            default: the setting on the webhook
+        -->
         <param name="username" value="Log4php" />
+        <!--
+         unfurl_media: whether Slack should unfurl media-based URLs
+            bool
+            default: true
+        -->
         <param name="icon" value=":do_not_litter:" />
+        <!--
+            allow_markdown: whether Markdown should be parsed in messages
+            bool
+            default: true
+        -->
         <param name="allowMarkdown" value="1" />
+        <!--
+            markdown_in_attachments: which attachment fields should have Markdown parsed
+            array
+            default: []
+        -->
         <param name="asAttachment" value="1" />
+        <!--
+            unfurl_links: whether Slack should unfurl text-based URLs
+            bool
+            default: false
+        -->
+        <param name="unfurlLinks" value="0" />
+        <param name="unfurlMedia" value="1" />
+        <param name="addEmoji" value="1" />
+        <!--
+            link_names: whether names like @regan or #accounting should be linked
+            bool
+            default: false
+         -->
+        <param name="linkNames" value="1" />
     </appender>
     <logger name="myLogger">
         <appender_ref ref="default" />
