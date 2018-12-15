@@ -290,15 +290,15 @@ class Client
             $logMessage = \substr($logMessage, 0, $maxLength);
         }
 
+        $message->setText(
+            $event->getLevel()->toString()
+            .' ( Logger: '.$this->_getName().' ): '
+            .$logMessage
+        );
+
         if ((bool) $this->_getConfig()->get(Config::KEY_ALLOW_MARKDOWN)) {
             $message->setText(
                 $this->_getMarkdownTitleText($event, $logMessage)
-            );
-        } else {
-            $message->setText(
-                $event->getLevel()->toString()
-                .' ( Logger: '.$this->_getName().' ): '
-                .$logMessage
             );
         }
 

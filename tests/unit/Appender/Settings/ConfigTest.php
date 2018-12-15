@@ -92,7 +92,7 @@ class ConfigTest extends \Codeception\Test\Unit
         $config = new Config();
 
         // Act
-        $actual = $config->get('foo');
+        $config->get('foo');
 
         // Assert
         // error
@@ -118,7 +118,7 @@ class ConfigTest extends \Codeception\Test\Unit
         $config = new Config();
 
         // Act
-        $actual = $config->set('foo', 'bar');
+        $config->set('foo', 'bar');
 
         // Assert
         // error
