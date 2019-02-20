@@ -253,11 +253,7 @@ class Slack extends LoggerAppender
      */
     protected function _getSlackClient(): SClient
     {
-        if (null === $this->_slackClient) {
-            $this->_slackClient = SClient::factory($this->_config);
-        }
-
-        return $this->_slackClient;
+        return SClient::factory($this->_config);
     }
 
     /**
@@ -289,15 +285,18 @@ class Slack extends LoggerAppender
     protected function append(LogEvent $event)
     {
         try {
-            $this->_getSlackClient()->setName($event->getLoggerName());
-            $this->_getSlackClient()->setLogMessage(
+            $client = $this->_getSlackClient();
+
+            $client->setName($event->getLoggerName());
+            $client->setLogMessage(
                 \trim($this->layout->format($event))
             );
 
             // generate message
-            $message = $this->_getSlackClient()->generateMessage($event);
+            $message = $client->generateMessage($event);
+
             // send message
-            $this->_getSlackClient()->sendMessage($message);
+            $client->sendMessage($message);
 
             return true;
         } catch (\GuzzleHttp\Exception\GuzzleException $e) {
