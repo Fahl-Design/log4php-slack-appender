@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace WebProject\Tests\Unit\Log4php\Appender;
 
-use Guzzle\Service\Resource\Model;
 use WebProject\Log4php\Appender\Settings\Config;
 use WebProject\Log4php\Appender\Slack;
 use WebProject\Log4php\Layouts\Slack as SlackLayout;
@@ -187,7 +186,6 @@ class SlackTest extends \Codeception\Test\Unit
     }
 
     /**
-     *
      * @param $client
      *
      * @return \Mockery\MockInterface|Slack
