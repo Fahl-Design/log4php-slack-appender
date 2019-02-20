@@ -194,7 +194,7 @@ class Config implements \JsonSerializable
     /**
      * @var array
      */
-    protected static $_config;
+    protected $_config;
 
     /**
      * Config constructor.
@@ -203,7 +203,7 @@ class Config implements \JsonSerializable
      */
     public function __construct(array $config = [])
     {
-        self::$_config = \array_merge(self::DEFAULT_CONFIG, $config);
+        $this->_config = \array_merge(self::DEFAULT_CONFIG, $config);
     }
 
     /**
@@ -218,7 +218,7 @@ class Config implements \JsonSerializable
     public function get(string $setting)
     {
         if (\array_key_exists($setting, self::DEFAULT_CONFIG)) {
-            return self::$_config[$setting];
+            return $this->_config[$setting];
         }
 
         throw new \InvalidArgumentException(
@@ -239,7 +239,7 @@ class Config implements \JsonSerializable
     public function set(string $setting, $value): self
     {
         if (\array_key_exists($setting, self::DEFAULT_CONFIG)) {
-            self::$_config[$setting] = $value;
+            $this->_config[$setting] = $value;
 
             return $this;
         }
@@ -256,7 +256,7 @@ class Config implements \JsonSerializable
      */
     public function toArray(): array
     {
-        return self::$_config;
+        return $this->_config;
     }
 
     /**

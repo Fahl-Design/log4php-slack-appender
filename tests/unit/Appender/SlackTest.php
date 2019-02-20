@@ -36,7 +36,7 @@ class SlackTest extends \Codeception\Test\Unit
         $client->shouldReceive('_getConfig')->zeroOrMoreTimes()->andReturn(new Config());
         $client->makePartial();
 
-        $appender = new Slack('test', $client, new Config());
+        $appender = $this->_getMockedAppender($client);
 
         $logEvent = new \LoggerLoggingEvent(
             'fqcn',
@@ -70,7 +70,7 @@ class SlackTest extends \Codeception\Test\Unit
             ->andReturn(new Config());
         $client->makePartial();
 
-        $appender = new Slack('test', $client, new Config());
+        $appender = $this->_getMockedAppender($client);
 
         $logEvent = new \LoggerLoggingEvent(
             'fqcn',
@@ -106,7 +106,7 @@ class SlackTest extends \Codeception\Test\Unit
             ->andReturn(new Config());
         $client->makePartial();
 
-        $appender = new Slack('test', $client, new Config());
+        $appender = $this->_getMockedAppender($client);
 
         $logEvent = new \LoggerLoggingEvent(
             'fqcn',
@@ -183,5 +183,21 @@ class SlackTest extends \Codeception\Test\Unit
             ['setUsername','','username invalid'],
             ['setChannel','','channel invalid'],
         ];
+    }
+
+    /**
+     * @param $client
+     *
+     * @return \Mockery\MockInterface|Slack
+     */
+    protected function _getMockedAppender($client): Slack
+    {
+        $appender = \Mockery::mock(Slack::class);
+        $appender->shouldAllowMockingProtectedMethods();
+        $appender->shouldReceive('_getSlackClient')->once()->andReturn($client);
+        $appender->shouldReceive('getConfig')->once()->andReturn(new Config());
+        $appender->makePartial();
+
+        return $appender;
     }
 }
