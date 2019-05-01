@@ -1,0 +1,8 @@
+title: Log4php-slack-appender
+description: A log4php appender build as wrapper for "maknz/slack" package
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-hacker
+
+gems:
+  - jekyll-mentions
