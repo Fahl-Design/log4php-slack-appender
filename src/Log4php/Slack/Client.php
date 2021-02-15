@@ -108,7 +108,8 @@ class Client
      * @return string
      */
     protected function _getMarkdownTitleText(
-        LogEvent $event, string $logMessage
+        LogEvent $event,
+        string $logMessage
     ): string {
         return '*'.$event->getLevel()->toString().'* '
             .'_( Logger: *'.$this->_getName().'* )_: '.$logMessage.'';
@@ -174,7 +175,8 @@ class Client
      * @param null|SlackApiClient $apiClient
      */
     public function __construct(
-        Config $config, SlackApiClient $apiClient = null
+        Config $config,
+        SlackApiClient $apiClient = null
     ) {
         $this->_config = $config;
         $this->_slackApiClient = $apiClient;
@@ -276,7 +278,8 @@ class Client
      * @return Message
      */
     protected function _addMessageTitle(
-        Message $message, LogEvent $event
+        Message $message,
+        LogEvent $event
     ): Message {
         $logMessage = $this->_getLogMessage($event);
 
