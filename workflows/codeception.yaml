@@ -1,0 +1,37 @@
+on: [ push, pull_request ]
+name: Cocdeception
+
+jobs:
+    codeception-tests:
+        name: "Codeception tests"
+        runs-on: "ubuntu-latest"
+        continue-on-error: ${{ matrix.allow-fail }}
+        strategy:
+            matrix:
+                include:
+                    #  - { php-version: 7.4, dependencies: locked, coverage: none, with_coverage: false, allow-fail: false }
+                    - { php-version: 7.4, dependencies: highest, coverage: none, with_coverage: false, allow-fail: true }
+                    - { php-version: 8.0, dependencies: locked, coverage: none, with_coverage: false, allow-fail: false }
+                    - { php-version: 8.0, dependencies: highest, coverage: none, with_coverage: false, allow-fail: true }
+                    - { php-version: 8.0, dependencies: locked, coverage: xdebug, with_coverage: true, allow-fail: false }
+                    # - { php-version: 8.1, dependencies: highest, coverage: none, with_coverage: false, allow-fail: true }
+
+        steps:
+            -   name: "Checkout code"
+                uses: "actions/checkout@v2"
+
+            -   name: "Install PHP"
+                uses: "shivammathur/setup-php@v2"
+                with:
+                    coverage: "${{ matrix.coverage }}"
+                    ini-values: display_errors=On, display_startup_errors=On, error_reporting=32767
+                    php-version: "${{ matrix.php-version }}"
+
+            -   name: "Install dependencies with Composer"
+                uses: "ramsey/composer-install@v1"
+                with:
+                    dependency-versions: "${{ matrix.dependencies }}"
+
+            -   name: "Run Codeception"
+                run: |
+                    vendor/bin/codecept run -c . -vvv --json
