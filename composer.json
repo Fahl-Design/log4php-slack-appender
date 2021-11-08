@@ -27,7 +27,7 @@
     "codeception/module-asserts": "^1",
     "codeception/mockery-module": "^0",
     "mockery/mockery": "^1.0",
-    "friendsofphp/php-cs-fixer": "2.*",
+    "friendsofphp/php-cs-fixer": "3.*",
     "monolog/monolog": "1.*",
     "codacy/coverage": "1.*",
     "symfony/var-dumper": "^4.0 || ^5.3"
