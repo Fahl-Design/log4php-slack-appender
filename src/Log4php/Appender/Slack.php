@@ -62,7 +62,8 @@ class Slack extends LoggerAppender
     public function setLinkNames(bool $linkNames): self
     {
         $this->getConfig()->set(
-            Config::KEY_LINK_NAMES, $linkNames
+            Config::KEY_LINK_NAMES,
+            $linkNames
         );
 
         return $this;
@@ -78,7 +79,8 @@ class Slack extends LoggerAppender
     public function setMarkdownInAttachmentsFields(array $fields): self
     {
         $this->getConfig()->set(
-            Config::KEY_MARKDOWN_IN_ATTACHMENTS_FIELDS, $fields
+            Config::KEY_MARKDOWN_IN_ATTACHMENTS_FIELDS,
+            $fields
         );
 
         return $this;
@@ -94,7 +96,8 @@ class Slack extends LoggerAppender
     public function setIconByLevel(bool $setIconByLevel): self
     {
         $this->getConfig()->set(
-            Config::KEY_SET_ICON_BY_LOG_LEVEL, $setIconByLevel
+            Config::KEY_SET_ICON_BY_LOG_LEVEL,
+            $setIconByLevel
         );
 
         return $this;
@@ -110,7 +113,8 @@ class Slack extends LoggerAppender
     public function setUnfurlLinks(bool $unfurlLinks): self
     {
         $this->getConfig()->set(
-            Config::KEY_UNFURL_LINKS, $unfurlLinks
+            Config::KEY_UNFURL_LINKS,
+            $unfurlLinks
         );
 
         return $this;
@@ -126,7 +130,8 @@ class Slack extends LoggerAppender
     public function setUnfurlMedia(bool $unfurlMedia): self
     {
         $this->getConfig()->set(
-            Config::KEY_UNFURL_MEDIA, $unfurlMedia
+            Config::KEY_UNFURL_MEDIA,
+            $unfurlMedia
         );
 
         return $this;
@@ -143,7 +148,8 @@ class Slack extends LoggerAppender
     {
         if (!empty($icon)) {
             $this->getConfig()->set(
-                Config::KEY_ICON, $icon
+                Config::KEY_ICON,
+                $icon
             );
 
             return $this;
@@ -234,7 +240,8 @@ class Slack extends LoggerAppender
     public function setAsAttachment(bool $sendLogAsAttachment): self
     {
         $this->getConfig()->set(
-            Config::KEY_AS_ATTACHMENT, $sendLogAsAttachment
+            Config::KEY_AS_ATTACHMENT,
+            $sendLogAsAttachment
         );
 
         return $this;
@@ -250,7 +257,8 @@ class Slack extends LoggerAppender
     public function setAddLoggerNameToMessage(bool $value): self
     {
         $this->getConfig()->set(
-            Config::KEY_ADD_LOGGER_TO_MESSAGE, $value
+            Config::KEY_ADD_LOGGER_TO_MESSAGE,
+            $value
         );
 
         return $this;
