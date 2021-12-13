@@ -17,7 +17,7 @@
   "require": {
     "php": "^7.1 || ^8.0",
     "apache/log4php": "^2.3",
-    "alek13/slack": "^1",
+    "alek13/slack": "^2",
     "ext-json": "*",
     "ext-curl": "*"
   },
